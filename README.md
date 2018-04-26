@@ -1,4 +1,4 @@
 # subspace
 
 ## Running CMake
-Navigate to `subspace/build` and run `cmake .`
+Navigate to `subspace` and run `cmake -G "MinGW Makefiles" -Hbuild -Bbuild`

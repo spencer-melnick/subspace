@@ -4,21 +4,25 @@ project(subspace CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Compile commands for VSCode
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Grab all C++ sources and include all headers
 file(GLOB_RECURSE SOURCES "../src/*.cpp")
 include_directories("../src")
-
 
 # Output to "bin/debug" for debug build
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     file(MAKE_DIRECTORY "../bin/debug")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin/debug")
 
-# Output to "bin/release" for release build
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+# Output to "bin/release" for release build or default
+else()
     file(MAKE_DIRECTORY "../bin/release")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin/release")
 endif()
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Include nlohman/json
+target_include_directories(${PROJECT_NAME} PUBLIC "../lib/json/include")

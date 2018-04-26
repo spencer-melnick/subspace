@@ -36,7 +36,8 @@ bin
 build/CMakeFiles
 CMakeCache.txt
 Makefile
+compile_commands.json
 *.cmake
 
 # Visual Studio Code Files
-.vscode
+# .vscode
