@@ -6,6 +6,4 @@
  * be embedded in the program without having to modify engine/config.cpp each time
  **/
 
-#include <nlohmann/json.hpp>
-
 #define DEFAULT_CONFIG_STRING "@subspace_DEFAULT_CONFIG_STR@"
