@@ -12,6 +12,32 @@
             },
         },
         {
+            "label": "cmake debug",
+            "type": "shell",
+            "command": "cmake -DCMAKE_BUILD_TYPE='Debug' -Hbuild -Bbuild",
+            "windows": {
+                "command": "cmake -G 'MinGW Makefiles' -DCMAKE_BUILD_TYPE='Debug' -Hbuild -Bbuild"
+            },
+        },
+        {
+            "label": "build debug",
+            "type": "shell",
+            "command": "make",
+            "windows": {
+                "command": "mingw32-make"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "args": [
+                "-C", "build"
+            ],
+            "dependsOn": [
+                "cmake debug"
+            ],
+            "group": "build"
+        },
+        {
             "label": "build release",
             "type": "shell",
             "command": "make",
