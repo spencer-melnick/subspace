@@ -30,7 +30,7 @@ Config::Config(const string& filename)
 }
 
 Config::~Config() {
-    fstream file {filename_};
+    fstream file {filename_, file.out};
 
     if (!file.is_open()) {
         return;
