@@ -7,6 +7,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Compile commands for VSCode
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Embed the contents of default_config.json as a string literal
+file(STRINGS "../src/generated/default_config.json" CONFIG_STR_RAW)
+string(REPLACE "\"" "\\\"" "${PROJECT_NAME}_DEFAULT_CONFIG_STR" ${CONFIG_STR_RAW})
+configure_file(
+    "../src/generated/default_config.hpp.in"
+    "${PROJECT_BINARY_DIR}/generated/default_config.hpp"
+)
+include_directories(${PROJECT_BINARY_DIR})
+
 # Grab all C++ sources and include all headers
 file(GLOB_RECURSE SOURCES "../src/*.cpp")
 include_directories("../src")

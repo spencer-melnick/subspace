@@ -5,7 +5,8 @@
             "includePath": [
                 "/usr/include",
                 "/usr/local/include",
-                "${workspaceFolder}"
+                "${workspaceFolder}",
+                "${workspaceFolder}/build"
             ],
             "defines": [],
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
@@ -29,7 +30,8 @@
             "includePath": [
                 "/usr/include",
                 "/usr/local/include",
-                "${workspaceFolder}"
+                "${workspaceFolder}",
+                "${workspaceFolder}/build"
             ],
             "defines": [],
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
@@ -47,6 +49,7 @@
         {
             "name": "Win32",
             "includePath": [
+                "${workspaceFolder}/build",
                 "${workspaceFolder}",
                 "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.10.25017/include/*",
                 "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.10.25017/atlmfc/include/*",

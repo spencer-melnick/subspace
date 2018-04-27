@@ -2,23 +2,49 @@
 
 #include <fstream>
 
-#include <nlohmann/json.hpp>
+#include "generated/default_config.hpp"
 
+using namespace std;
 using namespace subspace;
-using json = nlohmann::json;
 
-Config::Config(const string& filename) {
-    fstream file {filename};
-    json j;
+Config::Config(const string& filename)
+    : filename_ {filename}
+{
+    config_ = json::parse(DEFAULT_CONFIG_STRING);
+    fstream file {filename_};
 
     if (file.is_open()) {
-        file >> j;
+        json new_config;
+        
+        try {
+            file >> new_config;
+            config_.merge_patch(new_config);
+        } catch (json::parse_error& e) {
+            // Swallow parse errors - we still have a good config from our default
+        }
+
+        file.close();
     }
 
-    try {
-        fullscreen_ = j.at("fullscreen");
-    } catch (json::out_of_range& e) {
-        fullscreen_ = false;
+    fullscreen_ = config_["fullscreen"];
+}
+
+Config::~Config() {
+    fstream file {filename_};
+
+    if (!file.is_open()) {
+        return;
+    }
+
+    // Write config.json with tabs
+    file << setfill('\t') << setw(1) << config_ << endl;
+    file.close();
+}
+
+void Config::setFullscreen(bool fullscreen) {
+    if (fullscreen != fullscreen_) {
+        fullscreen_ = fullscreen;
+        config_["fullscreen"] = fullscreen_;
     }
 }
 
