@@ -5,6 +5,8 @@
 #include "generated/default_config.hpp"
 
 using namespace std;
+using json = nlohmann::json;
+
 using namespace subspace;
 
 Config::Config(const string& filename)
