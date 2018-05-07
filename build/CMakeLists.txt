@@ -31,6 +31,9 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin/release")
 endif()
 
+add_custom_target(docs COMMAND "doxygen" "../doc/Doxyfile"
+                       COMMAND "make" "-C\"../doc\"" "html")
+
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Include nlohman/json
