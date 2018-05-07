@@ -70,6 +70,19 @@
                 "kind": "test",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build docs",
+            "type": "shell",
+            "command": "make",
+            "windows": {
+                "command": "mingw32-make"
+            },
+            "args": [
+                "-Cbuild",
+                "docs"
+            ],
+            "problemMatcher": "$gcc"
         }
     ]
 }
