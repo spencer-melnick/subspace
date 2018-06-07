@@ -1,4 +1,5 @@
 #include <iostream>
+#include <exception>
 
 #include <vulkan/vulkan.h>
 
@@ -9,7 +10,12 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
     subspace::Config config {"rc/config.json"};
-    config.setFullscreen(!config.isFullscreen());
+
+    try {
+        subspace::initializeVideo();
+    } catch (const exception& e) {
+        cout << "Error: " << e.what() << endl;
+    }
 
     return 0;
 }

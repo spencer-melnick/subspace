@@ -15,4 +15,5 @@ done, you'll be able to view a full API reference here.
    :maxdepth: 2
    :caption: API by Class
 
-   api/config
+   api/engine/util/config
+   api/engine/video/video_exception
