@@ -1,5 +1,11 @@
 #pragma once
 
-/* Main engine include file */
+/**
+ * @file
+ * @author Spencer Melnick <smelnick97@gmail.com>
+ * 
+ * Main engine include file.
+ */
 
-#include "config.hpp"
+#include "util/util.hpp"
+#include "video/video.hpp"

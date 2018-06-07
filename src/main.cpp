@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <vulkan/vulkan.h>
+
 #include "engine/subspace.hpp"
 #include "generated/default_config.hpp"
 
