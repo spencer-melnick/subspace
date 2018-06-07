@@ -28,6 +28,9 @@ namespace subspace {
         }
 
         fullscreen_ = config_["fullscreen"];
+        
+        xResolution_ = config_["x_resolution"];
+        yResolution_ = config_["y_resolution"];
     }
 
     Config::~Config() {
@@ -51,5 +54,28 @@ namespace subspace {
 
     bool Config::isFullscreen() const {
         return fullscreen_;
+    }
+
+
+    void Config::setXResolution(unsigned int x) {
+        if (xResolution_ != x) {
+            xResolution_ = x;
+            config_["x_resolution"] = xResolution_;
+        }
+    }
+
+    unsigned int Config::getXResolution() const {
+        return xResolution_;
+    }
+
+    void Config::setYResolution(unsigned int y) {
+        if (yResolution_ != y) {
+            yResolution_ = y;
+            config_["y_resolution"] = yResolution_;
+        }
+    }
+
+    unsigned int Config::getYResolution() const {
+        return yResolution_;
     }
 }

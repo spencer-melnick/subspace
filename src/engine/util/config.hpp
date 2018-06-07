@@ -37,9 +37,17 @@ namespace subspace {
             void setFullscreen(bool fullscreen);
             bool isFullscreen() const;
 
+            void setXResolution(unsigned int x);
+            unsigned int getXResolution() const;
+
+            void setYResolution(unsigned int y);
+            unsigned int getYResolution() const;
+
         private:
-            bool fullscreen_;
             std::string filename_;
             nlohmann::json config_;
+
+            bool fullscreen_;
+            unsigned int xResolution_, yResolution_;
     };
 }

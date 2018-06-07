@@ -13,6 +13,7 @@ int main(int argc, char* argv[]) {
 
     try {
         subspace::initializeVideo();
+        subspace::Window("Subspace Engine", config);
     } catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
     }

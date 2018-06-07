@@ -10,6 +10,8 @@ const char* VideoException::what() const noexcept {
     switch (type_) {
         case Type::SDL2_INIT_FAILURE:
             return "Failed to initialize SDL2 system";
+        case Type::WINDOW_CREATE_FAILURE:
+            return "Failed to create window";
         default:
             return "No error";
     }

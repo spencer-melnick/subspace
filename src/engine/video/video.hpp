@@ -12,5 +12,15 @@
 #include "window.hpp"
 
 namespace subspace {
+    /**
+     * Initializes the video subsystem and all necessary components, including
+     * the SDL2 video subsystem. Throws a VideoException on failure.
+     */
     void initializeVideo();
+
+    /**
+     * Terminates the video subsystem and all components started by
+     * initializeVideo()
+     */
+    void terminateVideo();
 }

@@ -8,4 +8,8 @@ namespace subspace {
             throw VideoException(VideoException::Type::SDL2_INIT_FAILURE);
         }
     }
+
+    void terminateVideo() {
+        SDL_Quit();
+    }
 }

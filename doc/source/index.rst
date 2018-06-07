@@ -17,3 +17,4 @@ done, you'll be able to view a full API reference here.
 
    api/engine/util/config
    api/engine/video/video_exception
+   api/engine/video/window

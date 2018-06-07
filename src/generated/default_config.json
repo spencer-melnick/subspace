@@ -1,3 +1,5 @@
 {
-	"fullscreen": true
+	"fullscreen": true,
+	"x_resolution": 800,
+	"y_resolution": 600
 }

@@ -20,7 +20,8 @@ namespace subspace {
              */
             enum class Type {
                 NONE,
-                SDL2_INIT_FAILURE
+                SDL2_INIT_FAILURE,
+                WINDOW_CREATE_FAILURE
             };
 
             /**
