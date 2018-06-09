@@ -1,0 +1,3 @@
+[INFO]    2018-06-08 22:08:55 Launching engine...
+[VERBOSE] 2018-06-08 22:08:55 Video subsystem initialized
+[VERBOSE] 2018-06-08 22:08:55 Created window

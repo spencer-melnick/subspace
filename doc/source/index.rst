@@ -16,5 +16,6 @@ done, you'll be able to view a full API reference here.
    :caption: API by Class
 
    api/engine/util/config
+   api/engine/util/logger
    api/engine/video/video_exception
    api/engine/video/window

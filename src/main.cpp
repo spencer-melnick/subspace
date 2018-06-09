@@ -1,16 +1,9 @@
-#include <iostream>
 #include <exception>
-#include <thread>
 #include <fstream>
 
-#include <fmt/format.h>
-#include <vulkan/vulkan.hpp>
-
 #include "engine/subspace.hpp"
-#include "generated/default_config.hpp"
 
 using namespace std;
-using namespace std::chrono_literals;
 
 int main(int argc, char* argv[]) {
     fstream loggerFile {"log.txt", loggerFile.out};
