@@ -21,14 +21,15 @@ namespace subspace {
                 file >> new_config;
                 config_.merge_patch(new_config);
             } catch (json::parse_error& e) {
-                // Swallow parse errors - we still have a good config from our default
+                // Swallow parse errors - we still have a good config from our
+                // default
             }
 
             file.close();
         }
 
         fullscreen_ = config_["fullscreen"];
-        
+
         xResolution_ = config_["x_resolution"];
         yResolution_ = config_["y_resolution"];
     }

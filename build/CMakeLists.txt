@@ -48,6 +48,11 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 # Include nlohman/json
 target_include_directories(${PROJECT_NAME} PUBLIC "../lib/json/include")
 
+# {fmt}
+find_package(fmt REQUIRED)
+target_link_libraries(${PROJECT_NAME} fmt::fmt)
+target_include_directories(${PROJECT_NAME} PUBLIC fmt::fmt)
+
 # Vulkan API
 find_package(Vulkan REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${Vulkan_LIBRARIES})

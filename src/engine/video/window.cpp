@@ -12,7 +12,8 @@ namespace subspace {
             name.c_str(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             config.getXResolution(), config.getYResolution(),
-            flags);
+            flags
+        );
 
         if (sdlWindow_ == nullptr) {
             throw VideoException(VideoException::Type::WINDOW_CREATE_FAILURE);

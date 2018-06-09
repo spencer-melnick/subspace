@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.p8": "lua",
+        "*.hpp.in": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp",
+        "iosfwd": "cpp"
+    }
+}
