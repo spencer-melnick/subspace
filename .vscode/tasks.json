@@ -22,7 +22,7 @@
         {
             "label": "build debug",
             "type": "shell",
-            "command": "make -j4",
+            "command": "make",
             "windows": {
                 "command": "mingw32-make"
             },

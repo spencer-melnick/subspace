@@ -10,7 +10,7 @@
 
 #include "video_exception.hpp"
 #include "window.hpp"
-#include "renderer.hpp"
+#include "render_context.hpp"
 
 namespace subspace {
     /**

@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
         subspace::Window window("Subspace Engine", config);
         logger.logVerbose("Created window");
 
-        subspace::Renderer renderer(window);
+        subspace::RenderContext context(window);
         logger.logVerbose("Created Vulkan instance");
     } catch (const exception& e) {
         logger.logError(e.what());

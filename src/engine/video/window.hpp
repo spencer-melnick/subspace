@@ -16,7 +16,7 @@
 #include "../util/config.hpp"
 
 namespace subspace {
-    class Renderer;
+    class RenderContext;
 
     class Window {
         /**
@@ -31,6 +31,6 @@ namespace subspace {
         private:
             SDL_Window* sdlWindow_;
 
-            friend class Renderer;
+            friend class RenderContext;
     };
 }

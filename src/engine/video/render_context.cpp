@@ -1,19 +1,19 @@
-#include "renderer.hpp"
+#include "render_context.hpp"
 
 #include <SDL2/SDL_vulkan.h>
 
 using namespace std;
 
 namespace subspace {
-    Renderer::Renderer(const Window& window) {
+    RenderContext::RenderContext(const Window& window) {
         vulkanInstance_ = createVulkanInstance(window);
     }
 
-    Renderer::~Renderer() {
+    RenderContext::~RenderContext() {
         vulkanInstance_.destroy();
     }
 
-    vk::Instance Renderer::createVulkanInstance(const Window& window) {
+    vk::Instance RenderContext::createVulkanInstance(const Window& window) {
         vk::ApplicationInfo appInfo(
             "Subspace",
             1,
@@ -42,7 +42,7 @@ namespace subspace {
         return instance;
     }
 
-    vector<const char*> Renderer::getRequiredExtensions(const Window& window) {
+    vector<const char*> RenderContext::getRequiredExtensions(const Window& window) {
         unsigned int numExtensions;
         vector<const char*> result;
         const char** extensionList;

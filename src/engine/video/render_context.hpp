@@ -15,18 +15,18 @@
 
 namespace subspace {
     /**
-     * Class to wrap Vulkan a Vulkan instance, surface, and associated functions.
+     * Class to wrap Vulkan a Vulkan instance, and associated functions.
      */
-    class Renderer {
+    class RenderContext {
         public:
             /**
-             * Creates a renderer attached to the specified window and creates the underlying
-             * Vulkan instance and surface required for that window.
+             * Creates a render context wrapping an underlying Vulkan instance with all 
+             * extensions required by a given SDL window.
              * 
-             * @param window The window to which the renderer is to be attached.
+             * @param window The window with which to query required extensions.
              */
-            Renderer(const Window& window);
-            ~Renderer();
+            RenderContext(const Window& window);
+            ~RenderContext();
 
         private:
             vk::Instance vulkanInstance_;
