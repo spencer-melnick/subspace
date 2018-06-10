@@ -8,12 +8,16 @@ VideoException::VideoException(const VideoException::Type& type) :
 
 const char* VideoException::what() const noexcept {
     switch (type_) {
-        case Type::SDL2_INIT_FAILURE:
+        case Type::Sdl2InitFailure:
             return "Failed to initialize SDL2 system";
-        case Type::WINDOW_CREATE_FAILURE:
+        case Type::VulkanInitFailure:
+            return "Failed to load Vulkan library";
+        case Type::GetSurfaceExtensionsFailure:
+            return "Failed to get required Vulkan surface extensions";
+        case Type::InstanceCreateFailure:
+            return "Failed to create a Vulkan instance";
+        case Type::WindowCreateFailure:
             return "Failed to create window";
-        default:
-            return "No error";
     }
 }
 

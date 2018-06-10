@@ -6,17 +6,13 @@
 
 using namespace std;
 
-// This is a bit weird, but I couldn't quite get the line lengths to fit down
-// below
-using un = unsigned;
-
 namespace subspace {
     Logger::Logger(ostream& output, Level raiseLevel) :
         output_(output), raiseLevel_(raiseLevel)
     {};
 
     void Logger::log(const string& message, Logger::Level level) {
-        if (static_cast<un>(level) >= static_cast<un>(raiseLevel_)) {
+        if (static_cast<unsigned>(level) >= static_cast<unsigned>(raiseLevel_)) {
             time_t currentTime = time(nullptr);
 
             output_ << 
@@ -28,15 +24,15 @@ namespace subspace {
 
     const char* Logger::levelToString(Logger::Level level) {
         switch (level) {
-            case Level::VERBOSE:
+            case Level::Verbose:
                 return "[VERBOSE] ";
-            case Level::DEBUG:
+            case Level::Debug:
                 return "[DEBUG]   ";
-            case Level::INFO:
+            case Level::Info:
                 return "[INFO]    ";
-            case Level::WARNING:
+            case Level::Warning:
                 return "[WARNING] ";
-            case Level::ERROR:
+            case Level::Error:
                 return "[ERROR]   ";
         }
     }

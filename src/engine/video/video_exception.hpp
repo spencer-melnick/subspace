@@ -19,9 +19,11 @@ namespace subspace {
              * Type of a video subsystem exception
              */
             enum class Type {
-                NONE,
-                SDL2_INIT_FAILURE,
-                WINDOW_CREATE_FAILURE
+                Sdl2InitFailure,
+                VulkanInitFailure,
+                GetSurfaceExtensionsFailure,
+                InstanceCreateFailure,
+                WindowCreateFailure
             };
 
             /**

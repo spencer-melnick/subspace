@@ -22,7 +22,7 @@
         {
             "label": "build debug",
             "type": "shell",
-            "command": "make",
+            "command": "make -j4",
             "windows": {
                 "command": "mingw32-make"
             },
@@ -30,7 +30,7 @@
                 "$gcc"
             ],
             "args": [
-                "-C", "build"
+                "-C", "build", "-j4"
             ],
             "dependsOn": [
                 "cmake debug"
@@ -48,7 +48,7 @@
                 "$gcc"
             ],
             "args": [
-                "-C", "build"
+                "-C", "build", "-j4"
             ],
             "dependsOn": [
                 "cmake release"

@@ -2,7 +2,7 @@
 
 namespace subspace {
     Window::Window(const std::string& name, const Config& config) {
-        Uint32 flags = 0;
+        Uint32 flags = SDL_WINDOW_VULKAN;
 
         if (config.isFullscreen()) {
             flags = SDL_WINDOW_FULLSCREEN;
@@ -16,7 +16,7 @@ namespace subspace {
         );
 
         if (sdlWindow_ == nullptr) {
-            throw VideoException(VideoException::Type::WINDOW_CREATE_FAILURE);
+            throw VideoException(VideoException::Type::WindowCreateFailure);
         }
     }
 

@@ -21,11 +21,11 @@ namespace subspace {
              * The different logger message levels.
              */
             enum class Level : unsigned {
-                VERBOSE = 0,
-                DEBUG = 1,
-                INFO = 2,
-                WARNING = 3,
-                ERROR = 4
+                Verbose = 0,
+                Debug = 1,
+                Info = 2,
+                Warning = 3,
+                Error = 4
             };
 
             /**
@@ -36,27 +36,27 @@ namespace subspace {
              * logged with this level or lower will not be written to the
              * output stream.
              */
-            Logger(std::ostream& output, Level raiseLevel = Level::DEBUG);
+            Logger(std::ostream& output, Level raiseLevel = Level::Debug);
             void log(const std::string& message, Level level);
 
             inline void logVerbose(const std::string& message) {
-                log(message, Level::VERBOSE);
+                log(message, Level::Verbose);
             }
 
             inline void logDebug(const std::string& message) {
-                log(message, Level::DEBUG);
+                log(message, Level::Debug);
             }
 
             inline void logInfo(const std::string& message) {
-                log(message, Level::INFO);
+                log(message, Level::Info);
             }
 
             inline void logWarning(const std::string& message) {
-                log(message, Level::WARNING);
+                log(message, Level::Warning);
             }
 
             inline void logError(const std::string& message) {
-                log(message, Level::ERROR);
+                log(message, Level::Error);
             }
 
             /**

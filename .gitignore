@@ -49,3 +49,6 @@ rc/config.json
 
 # Documentation Files
 build/doc
+
+# Run Logs
+log.txt

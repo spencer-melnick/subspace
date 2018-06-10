@@ -16,6 +16,8 @@
 #include "../util/config.hpp"
 
 namespace subspace {
+    class Renderer;
+
     class Window {
         /**
          * Class that provides simple window functionality by wrapping the SDL2 window
@@ -28,5 +30,7 @@ namespace subspace {
 
         private:
             SDL_Window* sdlWindow_;
+
+            friend class Renderer;
     };
 }
