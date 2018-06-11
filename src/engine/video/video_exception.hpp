@@ -22,6 +22,8 @@ namespace subspace {
                 Sdl2InitFailure,
                 VulkanInitFailure,
                 GetSurfaceExtensionsFailure,
+                NoVulkanDevices,
+                NoSupportedDevices,
                 InstanceCreateFailure,
                 WindowCreateFailure
             };

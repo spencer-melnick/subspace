@@ -8,6 +8,8 @@
  */
 
 #include <vector>
+#include <map>
+#include <string>
 
 #include <vulkan/vulkan.hpp>
 
@@ -29,9 +31,20 @@ namespace subspace {
             ~RenderContext();
 
         private:
-            vk::Instance vulkanInstance_;
+            struct PhysicalDeviceWrapper_ {
+                vk::PhysicalDevice vulkanDevice;
+                unsigned usedQueueFamily;
+                std::string name;
+            };
 
-            vk::Instance createVulkanInstance(const Window& window);
+            vk::Instance vulkanInstance_;
+            vk::Device device_;
+
+            std::multimap<unsigned, PhysicalDeviceWrapper_> getSupportedDevices();
+            static vk::Instance createVulkanInstance(const Window& window);
             static std::vector<const char*> getRequiredExtensions(const Window& window);
+            static int rateDeviceSuitability(PhysicalDeviceWrapper_& physicalDevice);
+            static vk::Device createLogicalDevice(PhysicalDeviceWrapper_& physicalDevice);
+            static bool findValidQueueFamily(PhysicalDeviceWrapper_& physicalDevice);
     };
 }

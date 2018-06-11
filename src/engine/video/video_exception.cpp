@@ -14,6 +14,10 @@ const char* VideoException::what() const noexcept {
             return "Failed to load Vulkan library";
         case Type::GetSurfaceExtensionsFailure:
             return "Failed to get required Vulkan surface extensions";
+        case Type::NoVulkanDevices:
+            return "No Vulkan devices available";
+        case Type::NoSupportedDevices:
+            return "No Vulkan devices with required features available";
         case Type::InstanceCreateFailure:
             return "Failed to create a Vulkan instance";
         case Type::WindowCreateFailure:

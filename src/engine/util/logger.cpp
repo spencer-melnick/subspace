@@ -24,7 +24,7 @@ namespace subspace {
 
             *output_ << 
                 levelToString(level) << 
-                put_time(localtime(&currentTime), "%F %T ") <<
+                put_time(localtime(&currentTime), "%F %T  ") <<
                 message << endl;
         }
     }
