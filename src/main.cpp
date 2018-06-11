@@ -6,7 +6,7 @@
 using namespace std;
 using namespace subspace;
 
-int main(int argc, char* argv[]) {
+int main() {
     fstream logFile("log.txt", ios::out | ios::trunc);
     logger.setOutput(logFile);
 

@@ -9,11 +9,11 @@ using namespace std;
 namespace subspace {
     Logger::Logger(Level raiseLevel) :
         output_(nullptr), raiseLevel_(raiseLevel)
-    {};
+    {}
 
     Logger::Logger(ostream& output, Level raiseLevel) :
         output_(&output), raiseLevel_(raiseLevel)
-    {};
+    {}
 
     void Logger::log(const string& message, Logger::Level level) {
         unsigned evalLevel = static_cast<unsigned>(level);
@@ -46,6 +46,8 @@ namespace subspace {
             case Level::Error:
                 return "[ERROR]   ";
         }
+
+        return "";
     }
 
     Logger logger(Logger::Level::Verbose);

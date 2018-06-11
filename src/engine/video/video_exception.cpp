@@ -4,7 +4,7 @@ using namespace subspace;
 
 VideoException::VideoException(const VideoException::Type& type) :
     type_(type)
-{};
+{}
 
 const char* VideoException::what() const noexcept {
     switch (type_) {
@@ -21,8 +21,10 @@ const char* VideoException::what() const noexcept {
         case Type::InstanceCreateFailure:
             return "Failed to create a Vulkan instance";
         case Type::WindowCreateFailure:
-            return "Failed to create window";
+           return "Failed to create window";
     }
+
+    return "";
 }
 
 VideoException::Type VideoException::getType() const noexcept {

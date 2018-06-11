@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 
 #include "../util/logger.hpp"
+#include "video_exception.hpp"
 
 using namespace std;
 
@@ -127,8 +128,6 @@ namespace subspace {
                 logger.logVerbose(fmt::format("CPU or virtual device - {}", physicalDevice.name));
                 break;
         }
-
-        bool foundQueue = false;
 
         score += properties.limits.maxImageDimension2D;
         logger.logVerbose(fmt::format("Device score: {}", score));

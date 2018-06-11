@@ -92,8 +92,8 @@ namespace subspace {
             }
 
         private:
-            Level raiseLevel_;
             std::ostream* output_;
+            Level raiseLevel_;
     };
 
     extern Logger logger;
