@@ -6,17 +6,17 @@
         {
             "label": "cmake release",
             "type": "shell",
-            "command": "cmake -DCMAKE_BUILD_TYPE='Release' -Hbuild -Bbuild",
+            "command": "cmake -DCMAKE_BUILD_TYPE='Release' -H. -Bbuild",
             "windows": {
-                "command": "cmake -G 'MinGW Makefiles' -DCMAKE_BUILD_TYPE='Release' -Hbuild -Bbuild"
+                "command": "cmake -G 'MinGW Makefiles' -DCMAKE_BUILD_TYPE='Release' -H. -Bbuild"
             },
         },
         {
             "label": "cmake debug",
             "type": "shell",
-            "command": "cmake -DCMAKE_BUILD_TYPE='Debug' -Hbuild -Bbuild",
+            "command": "cmake -DCMAKE_BUILD_TYPE='Debug' -H. -Bbuild",
             "windows": {
-                "command": "cmake -G 'MinGW Makefiles' -DCMAKE_BUILD_TYPE='Debug' -Hbuild -Bbuild"
+                "command": "cmake -G 'MinGW Makefiles' -DCMAKE_BUILD_TYPE='Debug' -H. -Bbuild"
             },
         },
         {

@@ -48,7 +48,7 @@ compile_commands.json
 rc/config.json
 
 # Documentation Files
-build/doc
+doc/output
 
 # Run Logs
 log.txt
