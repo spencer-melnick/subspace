@@ -7,19 +7,30 @@
 using namespace std;
 
 namespace subspace {
+    Logger::Logger(Level raiseLevel) :
+        output_(nullptr), raiseLevel_(raiseLevel)
+    {};
+
     Logger::Logger(ostream& output, Level raiseLevel) :
-        output_(output), raiseLevel_(raiseLevel)
+        output_(&output), raiseLevel_(raiseLevel)
     {};
 
     void Logger::log(const string& message, Logger::Level level) {
-        if (static_cast<unsigned>(level) >= static_cast<unsigned>(raiseLevel_)) {
+        unsigned evalLevel = static_cast<unsigned>(level);
+        unsigned evalRaiseLevel = static_cast<unsigned>(raiseLevel_);
+
+        if (output_ != nullptr && evalLevel >= evalRaiseLevel) {
             time_t currentTime = time(nullptr);
 
-            output_ << 
+            *output_ << 
                 levelToString(level) << 
                 put_time(localtime(&currentTime), "%F %T ") <<
                 message << endl;
         }
+    }
+
+    void Logger::setOutput(ostream& output) {
+        output_ = &output;
     }
 
     const char* Logger::levelToString(Logger::Level level) {
@@ -36,4 +47,6 @@ namespace subspace {
                 return "[ERROR]   ";
         }
     }
+
+    Logger logger(Logger::Level::Verbose);
 }

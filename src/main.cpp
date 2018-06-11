@@ -4,26 +4,24 @@
 #include "engine/subspace.hpp"
 
 using namespace std;
+using namespace subspace;
 
 int main(int argc, char* argv[]) {
-    fstream loggerFile {"log.txt", loggerFile.out};
-
-    subspace::Logger logger {loggerFile, subspace::Logger::Level::Verbose};
-    subspace::Config config {"rc/config.json"};
+    fstream logFile("log.txt", ios::out | ios::trunc);
+    logger.setOutput(logFile);
 
     try {
-        logger.logInfo("Launching engine...");
+        logger.logInfo("Starting Subspace Engine...");
+        initializeVideo();
 
-        subspace::initializeVideo();
-        logger.logVerbose("Video subsystem initialized");
-        
-        subspace::Window window("Subspace Engine", config);
-        logger.logVerbose("Created window");
+        Config config {"rc/config.json"};
+        Window window("Subspace Engine", config);
 
-        subspace::RenderContext context(window);
-        logger.logVerbose("Created Vulkan instance");
+        RenderContext context(window);
+
+        terminateVideo();
     } catch (const exception& e) {
-        logger.logError(e.what());
+        subspace::logger.logError(e.what());
     }
 
     return 0;

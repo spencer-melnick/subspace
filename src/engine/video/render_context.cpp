@@ -1,6 +1,9 @@
 #include "render_context.hpp"
 
 #include <SDL2/SDL_vulkan.h>
+#include <fmt/format.h>
+
+#include "../util/logger.hpp"
 
 using namespace std;
 
@@ -11,6 +14,7 @@ namespace subspace {
 
     RenderContext::~RenderContext() {
         vulkanInstance_.destroy();
+        logger.logDebug("Destroyed Vulkan instance");
     }
 
     vk::Instance RenderContext::createVulkanInstance(const Window& window) {
@@ -39,6 +43,8 @@ namespace subspace {
             throw VideoException(VideoException::Type::InstanceCreateFailure);
         }
 
+        logger.logDebug("Created Vulkan instance");
+
         return instance;
     }
 
@@ -57,8 +63,10 @@ namespace subspace {
             throw VideoException(VideoException::Type::GetSurfaceExtensionsFailure);
         }
 
+        logger.logVerbose("Required Vulkan extensions for window rendering:");
         for (unsigned int i = 0; i < numExtensions; i++) {
             result.push_back(extensionList[i]);
+            logger.logVerbose(extensionList[i]);
         }
 
         delete[] extensionList;

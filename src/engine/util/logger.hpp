@@ -29,6 +29,17 @@ namespace subspace {
             };
 
             /**
+             * Creates a logger with no associated output stream. Any logging
+             * operations on this logger will fail until an output stream has been
+             * specified via Logger::setOutput().
+             * 
+             * @param raiseLevel The minimum message raise level. Any messages
+             * logged with this level or lower will not be written to the
+             * output stream.
+             */
+            Logger(Level raiseLevel = Level::Debug);
+
+            /**
              * Creates a logger that outputs to the specified stream.
              * 
              * @param output The stream to be written to.
@@ -37,7 +48,28 @@ namespace subspace {
              * output stream.
              */
             Logger(std::ostream& output, Level raiseLevel = Level::Debug);
+
+            /**
+             * Logs a message with the appropriate log level
+             */
             void log(const std::string& message, Level level);
+
+            /**
+             * Sets the associated output stream
+             */
+            void setOutput(std::ostream& output);
+
+            /**
+             * Converts a log level to its string equivalent for output. Each
+             * string is formatted with all capital letters and surrounding 
+             * braces. These string equivalents also contain whitespace such 
+             * that each string is the same length.
+             * 
+             * @param level The log level to be converted.
+             * 
+             * @return The string equivalent as a string literal.
+             */
+            static const char* levelToString(Level level);
 
             inline void logVerbose(const std::string& message) {
                 log(message, Level::Verbose);
@@ -59,20 +91,10 @@ namespace subspace {
                 log(message, Level::Error);
             }
 
-            /**
-             * Converts a log level to its string equivalent for output. Each
-             * string is formatted with all capital letters and surrounding 
-             * braces. These string equivalents also contain whitespace such 
-             * that each string is the same length.
-             * 
-             * @param level The log level to be converted.
-             * 
-             * @return The string equivalent as a string literal.
-             */
-            static const char* levelToString(Level level);
-
         private:
             Level raiseLevel_;
-            std::ostream& output_;
+            std::ostream* output_;
     };
+
+    extern Logger logger;
 }
