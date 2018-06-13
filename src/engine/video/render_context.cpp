@@ -1,7 +1,6 @@
 #include "render_context.hpp"
 
 #include <SDL2/SDL_vulkan.h>
-#include <fmt/format.h>
 
 #include "../util/logger.hpp"
 #include "video_exception.hpp"
@@ -15,7 +14,7 @@ namespace subspace {
         auto devices = getSupportedDevices();
         auto& physicalDevice = (--devices.end())->second;
 
-        logger.logInfo(fmt::format("Using device - {}", physicalDevice.name));
+        logger.logInfo("Using device - {}", physicalDevice.name);
         device_ = createLogicalDevice(physicalDevice);
     }
 
@@ -27,14 +26,14 @@ namespace subspace {
         logger.logDebug("Destroyed Vulkan instance");
     }
 
-    multimap<unsigned, RenderContext::PhysicalDeviceWrapper_> RenderContext::getSupportedDevices() {
-        multimap<unsigned, PhysicalDeviceWrapper_> result;
+    RenderContext::DeviceList_ RenderContext::getSupportedDevices() {
+        DeviceList_ result;
         auto devices = vulkanInstance_.enumeratePhysicalDevices();
 
         if (devices.empty()) {
             throw VideoException(VideoException::Type::NoVulkanDevices);
         }
-        logger.logVerbose(fmt::format("Found {} supported Vulkan devices:", devices.size()));
+        logger.logVerbose("Found {} supported Vulkan devices:", devices.size());
 
         for (auto& i : devices) {
             PhysicalDeviceWrapper_ device;
@@ -118,19 +117,19 @@ namespace subspace {
         switch (properties.deviceType) {
             case vk::PhysicalDeviceType::eDiscreteGpu:
                 score += 1000000;
-                logger.logVerbose(fmt::format("Discrete GPU - {}", physicalDevice.name));
+                logger.logVerbose("Discrete GPU - {}", physicalDevice.name);
                 break;
             case vk::PhysicalDeviceType::eIntegratedGpu:
                 score += 50000;
-                logger.logVerbose(fmt::format("Integrated GPU - {}", physicalDevice.name));
+                logger.logVerbose("Integrated GPU - {}", physicalDevice.name);
                 break;
             default:
-                logger.logVerbose(fmt::format("CPU or virtual device - {}", physicalDevice.name));
+                logger.logVerbose("CPU or virtual device - {}", physicalDevice.name);
                 break;
         }
 
         score += properties.limits.maxImageDimension2D;
-        logger.logVerbose(fmt::format("Device score: {}", score));
+        logger.logVerbose("Device score: {}", score);
 
         return score;
     }
@@ -154,19 +153,24 @@ namespace subspace {
         return physicalDevice.vulkanDevice.createDevice(deviceInfo);
     }
 
+    // NOTE: Currently doesn't check to see if the queue supports a specific Vulkan surface;
+    // generally there is only one queue family that supports graphics, and this should be
+    // the same one. Check here later if there are errors!
     bool RenderContext::findValidQueueFamily(PhysicalDeviceWrapper_& device) {
+        const auto requriredFlags = vk::QueueFlagBits::eGraphics | vk::QueueFlagBits::eTransfer;
+
         auto queueProperties = device.vulkanDevice.getQueueFamilyProperties();
 
         for (unsigned i = 0; i < queueProperties.size(); i++) {
             auto family = queueProperties[i];
 
-            if (family.queueCount > 0 && family.queueFlags & vk::QueueFlagBits::eGraphics) {
+            if (family.queueCount > 0 && (family.queueFlags & requriredFlags) == requriredFlags) {
                 device.usedQueueFamily = i;
                 return true;
             }
         }
         
-        logger.logWarning(fmt::format("{} is not compatible", device.name));
+        logger.logWarning("{} is not compatible", device.name);
         return false;
     }
 }

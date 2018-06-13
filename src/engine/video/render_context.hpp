@@ -37,10 +37,12 @@ namespace subspace {
                 std::string name;
             };
 
+            using DeviceList_ = std::multimap<unsigned, PhysicalDeviceWrapper_>;
+
             vk::Instance vulkanInstance_;
             vk::Device device_;
 
-            std::multimap<unsigned, PhysicalDeviceWrapper_> getSupportedDevices();
+            DeviceList_ getSupportedDevices();
             static vk::Instance createVulkanInstance(const Window& window);
             static std::vector<const char*> getRequiredExtensions(const Window& window);
             static int rateDeviceSuitability(PhysicalDeviceWrapper_& physicalDevice);

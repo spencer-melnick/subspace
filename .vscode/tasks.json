@@ -30,7 +30,7 @@
                 "$gcc"
             ],
             "args": [
-                "-C", "build", "-j4"
+                "-C", "build"//, "-j4"
             ],
             "dependsOn": [
                 "cmake debug"
@@ -48,7 +48,7 @@
                 "$gcc"
             ],
             "args": [
-                "-C", "build", "-j4"
+                "-C", "build"//, "-j4"
             ],
             "dependsOn": [
                 "cmake release"

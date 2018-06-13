@@ -18,11 +18,10 @@ int main() {
         Window window("Subspace Engine", config);
 
         RenderContext context(window);
-
-        terminateVideo();
     } catch (const exception& e) {
-        subspace::logger.logError(e.what());
+        logger.logError(e.what());
     }
+    terminateVideo();
 
     return 0;
 }

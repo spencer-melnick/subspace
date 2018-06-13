@@ -1,7 +1,5 @@
 #include "window.hpp"
 
-#include <fmt/format.h>
-
 #include "../util/logger.hpp"
 
 namespace subspace {
@@ -20,7 +18,7 @@ namespace subspace {
         );
 
         if (sdlWindow_ == nullptr) {
-            logger.logError(fmt::format("SDL2 error: {}", SDL_GetError()));
+            logger.logError("SDL2 error: {}", SDL_GetError());
             throw VideoException(VideoException::Type::WindowCreateFailure);
         }
 

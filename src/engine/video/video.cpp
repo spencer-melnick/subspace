@@ -2,14 +2,12 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
-#include <fmt/format.h>
-
 #include "../util/logger.hpp"
 
 namespace subspace {
     void initializeVideo() {
         if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
-            logger.logError(fmt::format("SDL2 Error: {}", SDL_GetError()));
+            logger.logError("SDL2 Error: {}", SDL_GetError());
             throw VideoException(VideoException::Type::Sdl2InitFailure);
         }
         logger.logDebug("Initialized SDL2 video subsystem");

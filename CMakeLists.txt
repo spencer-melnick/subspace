@@ -41,12 +41,12 @@ include_directories("src")
 
 # Output to "bin/debug" for debug build
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    file(MAKE_DIRECTORY "bin/debug")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin/debug")
+    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/debug")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/debug")
 # Output to "bin/release" for release build or default
 else()
-    file(MAKE_DIRECTORY "bin/release")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "bin/release")
+    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/release")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/release")
 endif()
 
 
