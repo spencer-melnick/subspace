@@ -11,9 +11,8 @@
 #include <map>
 #include <string>
 
+#include <SDL2/SDL.h>
 #include <vulkan/vulkan.hpp>
-
-#include "window.hpp"
 
 namespace subspace {
     /**
@@ -27,26 +26,26 @@ namespace subspace {
              * 
              * @param window The window with which to query required extensions.
              */
-            RenderContext(const Window& window);
+            RenderContext();
             ~RenderContext();
 
         private:
-            struct PhysicalDeviceWrapper_ {
+            struct DeviceWrapper_ {
                 vk::PhysicalDevice vulkanDevice;
                 unsigned usedQueueFamily;
                 std::string name;
             };
 
-            using DeviceList_ = std::multimap<unsigned, PhysicalDeviceWrapper_>;
+            using DeviceList_ = std::multimap<unsigned, DeviceWrapper_>;
 
             vk::Instance vulkanInstance_;
             vk::Device device_;
 
-            DeviceList_ getSupportedDevices();
-            static vk::Instance createVulkanInstance(const Window& window);
-            static std::vector<const char*> getRequiredExtensions(const Window& window);
-            static int rateDeviceSuitability(PhysicalDeviceWrapper_& physicalDevice);
-            static vk::Device createLogicalDevice(PhysicalDeviceWrapper_& physicalDevice);
-            static bool findValidQueueFamily(PhysicalDeviceWrapper_& physicalDevice);
+            DeviceList_ getSupportedDevices(vk::SurfaceKHR& surface);
+            static vk::Instance createVulkanInstance(SDL_Window* window);
+            static std::vector<const char*> getRequiredExtensions(SDL_Window* window);
+            static int rateDeviceSuitability(DeviceWrapper_& physicalDevice);
+            static vk::Device createLogicalDevice(DeviceWrapper_& physicalDevice);
+            static bool findQueueFamily(DeviceWrapper_& physicalDevice, vk::SurfaceKHR& surface);
     };
 }

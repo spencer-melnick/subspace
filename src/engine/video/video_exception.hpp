@@ -25,6 +25,7 @@ namespace subspace {
                 NoVulkanDevices,
                 NoSupportedDevices,
                 InstanceCreateFailure,
+                SurfaceCreateFailure,
                 WindowCreateFailure
             };
 

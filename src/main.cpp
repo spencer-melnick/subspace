@@ -15,9 +15,9 @@ int main() {
         initializeVideo();
 
         Config config {"rc/config.json"};
-        Window window("Subspace Engine", config);
 
-        RenderContext context(window);
+        RenderContext context;
+        Window window("Subspace Engine", config);
     } catch (const exception& e) {
         logger.logError(e.what());
     }

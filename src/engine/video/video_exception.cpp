@@ -20,6 +20,8 @@ const char* VideoException::what() const noexcept {
             return "No Vulkan devices with required features available";
         case Type::InstanceCreateFailure:
             return "Failed to create a Vulkan instance";
+        case Type::SurfaceCreateFailure:
+            return "Failed to create a Vulkan surface";
         case Type::WindowCreateFailure:
            return "Failed to create window";
     }
