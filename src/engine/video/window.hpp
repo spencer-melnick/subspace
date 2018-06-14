@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "video_exception.hpp"
+#include "render_context.hpp"
 #include "../util/config.hpp"
 
 namespace subspace {
@@ -22,7 +23,7 @@ namespace subspace {
          */
 
         public:
-            Window(const std::string& name, const Config& config);
+            Window(RenderContext& context, const std::string& name, const Config& config);
             ~Window();
 
         private:

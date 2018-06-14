@@ -10,6 +10,8 @@
 #include <memory>
 
 namespace subspace {
+    class Window;
+
     /**
      * Class to wrap Vulkan a Vulkan instance, and associated functions.
      */
@@ -25,6 +27,8 @@ namespace subspace {
             ~RenderContext();
 
         private:
+            friend class Window;
+
             class Impl_;
             std::unique_ptr<Impl_> impl_;
     };
