@@ -7,12 +7,7 @@
  * Class to wrap Vulkan a Vulkan instance, surface, and associated functions.
  */
 
-#include <vector>
-#include <map>
-#include <string>
-
-#include <SDL2/SDL.h>
-#include <vulkan/vulkan.hpp>
+#include <memory>
 
 namespace subspace {
     /**
@@ -30,22 +25,7 @@ namespace subspace {
             ~RenderContext();
 
         private:
-            struct DeviceWrapper_ {
-                vk::PhysicalDevice vulkanDevice;
-                unsigned usedQueueFamily;
-                std::string name;
-            };
-
-            using DeviceList_ = std::multimap<unsigned, DeviceWrapper_>;
-
-            vk::Instance vulkanInstance_;
-            vk::Device device_;
-
-            DeviceList_ getSupportedDevices(vk::SurfaceKHR& surface);
-            static vk::Instance createVulkanInstance(SDL_Window* window);
-            static std::vector<const char*> getRequiredExtensions(SDL_Window* window);
-            static int rateDeviceSuitability(DeviceWrapper_& physicalDevice);
-            static vk::Device createLogicalDevice(DeviceWrapper_& physicalDevice);
-            static bool findQueueFamily(DeviceWrapper_& physicalDevice, vk::SurfaceKHR& surface);
+            class Impl_;
+            std::unique_ptr<Impl_> impl_;
     };
 }

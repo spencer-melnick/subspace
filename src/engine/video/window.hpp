@@ -9,8 +9,7 @@
  */
 
 #include <string>
-
-#include <SDL2/SDL.h>
+#include <memory>
 
 #include "video_exception.hpp"
 #include "../util/config.hpp"
@@ -27,6 +26,7 @@ namespace subspace {
             ~Window();
 
         private:
-            SDL_Window* sdlWindow_;
+            class Impl_;
+            std::unique_ptr<Impl_> impl_;
     };
 }
