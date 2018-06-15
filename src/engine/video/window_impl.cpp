@@ -9,7 +9,7 @@ Window::Impl_::Impl_(RenderContext::Impl_& context, const std::string& name, con
     context_(context)
 {
     sdlWindow_ = createSdlWindow(name.c_str(), config);
-    vulkanSurface_ = createVulkanSurface(sdlWindow_, context_.instance_);
+    vulkanSurface_ = createVulkanSurface();
     swapchain_ = createSwapchain();
 }
 
@@ -51,9 +51,9 @@ SDL_Window* Window::Impl_::createSdlWindow(const char* name, const Config& confi
     return window;
 }
 
-vk::SurfaceKHR Window::Impl_::createVulkanSurface(SDL_Window* window, vk::Instance& instance) {
+vk::SurfaceKHR Window::Impl_::createVulkanSurface() {
     VkSurfaceKHR surfaceRaw;
-    if (SDL_Vulkan_CreateSurface(window, instance, &surfaceRaw) != SDL_TRUE) {
+    if (SDL_Vulkan_CreateSurface(sdlWindow_, context_.instance_, &surfaceRaw) != SDL_TRUE) {
         throw VideoException(VideoException::Type::SurfaceCreateFailure);
     }
     logger.logDebug("Created Vulkan surface for window");
