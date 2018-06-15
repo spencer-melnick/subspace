@@ -27,15 +27,20 @@ namespace subspace {
 
             using DeviceList_ = std::multimap<unsigned, DeviceWrapper_>;
 
-            vk::Instance vulkanInstance_;
+            vk::Instance instance_;
             vk::Device device_;
+            vk::Queue queue_;
 
+            static const std::vector<const char*> requiredDeviceExtensions_;
 
             DeviceList_ getSupportedDevices(vk::SurfaceKHR& surface);
+            static SDL_Window* createDummyWindow();
+            static vk::SurfaceKHR createDummySurface(SDL_Window* window, vk::Instance& instance);
             static vk::Instance createVulkanInstance(SDL_Window* window);
-            static std::vector<const char*> getRequiredExtensions(SDL_Window* window);
+            static std::vector<const char*> getRequiredWindowExtensions(SDL_Window* window);
             static int rateDeviceSuitability(DeviceWrapper_& physicalDevice);
             static vk::Device createLogicalDevice(DeviceWrapper_& physicalDevice);
+            static bool checkDeviceExtensions(vk::PhysicalDevice& device);
             static bool findQueueFamily(DeviceWrapper_& device, vk::SurfaceKHR& surface);
     };
 }

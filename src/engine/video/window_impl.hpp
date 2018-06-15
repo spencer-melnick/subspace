@@ -12,12 +12,14 @@ using namespace subspace;
 
 class Window::Impl_ {
     public:
-        Impl_(RenderContext::Impl_& context, const std::string& name, const Config& config) ;
+        Impl_(RenderContext::Impl_& context, const std::string& name, const Config& config);
         ~Impl_();
         
     private:
         SDL_Window* sdlWindow_;
-        vk::Instance& vulkanInstance_;
-        vk::Device& vulkanDevice_;
+        RenderContext::Impl_& context_;
         vk::SurfaceKHR vulkanSurface_;
+
+        static SDL_Window* createSdlWindow(const char* name, const Config& config);
+        static vk::SurfaceKHR createVulkanSurface(SDL_Window* window, vk::Instance& instance);
 };
