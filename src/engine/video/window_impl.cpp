@@ -15,7 +15,12 @@ Window::Impl_::Impl_(RenderContext::Impl_& context, const std::string& name, con
 
 Window::Impl_::~Impl_() {
     if (context_.instance_) {
-        context_.device_.destroySwapchainKHR(swapchain_);
+        for (auto& i : swapchain_.imageViews) {
+            context_.device_.destroyImageView(i);
+        }
+        logger.logDebug("Destroyed image views");
+
+        context_.device_.destroySwapchainKHR(swapchain_.swapchain);
         logger.logDebug("Destroyed window swapchain");
         
         context_.instance_.destroySurfaceKHR(vulkanSurface_);
@@ -139,19 +144,38 @@ uint32_t Window::Impl_::chooseImageCount() {
     return result;
 }
 
-vk::SwapchainKHR Window::Impl_::createSwapchain() {
-    auto surfaceFormat = chooseSurfaceFormat();
-    auto presentMode = choosePresentMode();
+Window::Impl_::SwapchainWrapper_ Window::Impl_::createSwapchain() {
+    SwapchainWrapper_ swapchain;
+
+    swapchain.format = chooseSurfaceFormat();
+    swapchain.mode = choosePresentMode();
     auto extent = chooseSwapExtent();
     uint32_t numImages = chooseImageCount();
 
     vk::SwapchainCreateInfoKHR createInfo(
-        {}, vulkanSurface_, numImages, surfaceFormat.format, 
-        surfaceFormat.colorSpace, extent, 1, vk::ImageUsageFlagBits::eColorAttachment,
+        {}, vulkanSurface_, numImages, swapchain.format.format, 
+        swapchain.format.colorSpace, extent, 1, vk::ImageUsageFlagBits::eColorAttachment,
         vk::SharingMode::eExclusive, 0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
-        vk::CompositeAlphaFlagBitsKHR::eOpaque, presentMode, true);
-
-    vk::SwapchainKHR swapchain = context_.device_.createSwapchainKHR(createInfo);
+        vk::CompositeAlphaFlagBitsKHR::eOpaque, swapchain.mode, true);
     logger.logDebug("Created window surface swapchain");
+
+    swapchain.swapchain = context_.device_.createSwapchainKHR(createInfo);
+    swapchain.images = context_.device_.getSwapchainImagesKHR(swapchain.swapchain);
+    swapchain.images.resize(numImages);
+    swapchain.imageViews = createImageViews(swapchain);
     return swapchain;
+}
+
+vector<vk::ImageView> Window::Impl_::createImageViews(SwapchainWrapper_ swapchain) {
+    vector<vk::ImageView> imageViews;
+
+    for (auto& i : swapchain.images) {
+        vk::ImageViewCreateInfo createInfo({}, i, vk::ImageViewType::e2D, swapchain.format.format,
+        vk::ComponentMapping(),
+        vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
+        imageViews.push_back(context_.device_.createImageView(createInfo));
+    }
+    logger.logDebug("Created swapchain image views");
+
+    return imageViews;
 }

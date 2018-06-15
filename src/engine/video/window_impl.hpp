@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <vulkan/vulkan.hpp>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -16,10 +18,18 @@ class Window::Impl_ {
         ~Impl_();
         
     private:
+        struct SwapchainWrapper_ {
+            vk::SwapchainKHR swapchain;
+            vk::SurfaceFormatKHR format;
+            vk::PresentModeKHR mode;
+            std::vector<vk::Image> images;
+            std::vector<vk::ImageView> imageViews;
+        };
+
         SDL_Window* sdlWindow_;
         RenderContext::Impl_& context_;
         vk::SurfaceKHR vulkanSurface_;
-        vk::SwapchainKHR swapchain_;
+        SwapchainWrapper_ swapchain_;
 
         static SDL_Window* createSdlWindow(const char* name, const Config& config);
 
@@ -28,5 +38,6 @@ class Window::Impl_ {
         vk::PresentModeKHR choosePresentMode();
         vk::Extent2D chooseSwapExtent();
         uint32_t chooseImageCount();
-        vk::SwapchainKHR createSwapchain();
+        SwapchainWrapper_ createSwapchain();
+        std::vector<vk::ImageView> createImageViews(SwapchainWrapper_ swapchain);
 };
