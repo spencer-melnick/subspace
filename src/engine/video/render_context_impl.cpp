@@ -13,14 +13,14 @@ RenderContext::Impl_::Impl_() {
     vk::SurfaceKHR dummySurface = createDummySurface(dummyWindow, instance_);
 
     auto devices = getSupportedDevices(dummySurface);
-    auto& physicalDevice = (--devices.end())->second;
+    physicalDevice_ = (--devices.end())->second;
 
     instance_.destroySurfaceKHR(dummySurface);
     SDL_DestroyWindow(dummyWindow);
     logger.logDebug("Freeing dummy window and surface");
 
-    logger.logInfo("Using device - {}", physicalDevice.name);
-    device_ = createLogicalDevice(physicalDevice);
+    logger.logInfo("Using device - {}", physicalDevice_.name);
+    device_ = createLogicalDevice(physicalDevice_);
 }
 
 

@@ -28,11 +28,16 @@ namespace subspace {
             using DeviceList_ = std::multimap<unsigned, DeviceWrapper_>;
 
             vk::Instance instance_;
+            DeviceWrapper_ physicalDevice_;
             vk::Device device_;
             vk::Queue queue_;
 
             static const std::vector<const char*> requiredDeviceExtensions_;
 
+            // Hoo boy!
+            // This got a little out out hand - creating Vulkan a Vulkan instance, device,and queue
+            // takes a lot of steps. It's all broken down into separate static functions to make it 
+            // more readable.
             DeviceList_ getSupportedDevices(vk::SurfaceKHR& surface);
             static SDL_Window* createDummyWindow();
             static vk::SurfaceKHR createDummySurface(SDL_Window* window, vk::Instance& instance);

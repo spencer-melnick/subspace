@@ -19,7 +19,14 @@ class Window::Impl_ {
         SDL_Window* sdlWindow_;
         RenderContext::Impl_& context_;
         vk::SurfaceKHR vulkanSurface_;
+        vk::SwapchainKHR swapchain_;
 
         static SDL_Window* createSdlWindow(const char* name, const Config& config);
         static vk::SurfaceKHR createVulkanSurface(SDL_Window* window, vk::Instance& instance);
+
+        vk::SurfaceFormatKHR chooseSurfaceFormat();
+        vk::PresentModeKHR choosePresentMode();
+        vk::Extent2D chooseSwapExtent();
+        uint32_t chooseImageCount();
+        vk::SwapchainKHR createSwapchain();
 };
