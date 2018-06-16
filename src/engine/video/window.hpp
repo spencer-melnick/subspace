@@ -27,7 +27,7 @@ namespace subspace {
             ~Window();
 
         private:
-            class Impl_;
-            std::unique_ptr<Impl_> impl_;
+            class Impl;
+            std::unique_ptr<Impl> impl_;
     };
 }

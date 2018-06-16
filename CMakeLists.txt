@@ -31,6 +31,7 @@ set(SOURCES
     "src/main.cpp"
     "src/engine/util/config.cpp"
     "src/engine/util/logger.cpp"
+    "src/engine/util/simple_file.cpp"
     "src/engine/video/render_context.cpp"
     "src/engine/video/render_context_impl.cpp"
     "src/engine/video/video_exception.cpp"

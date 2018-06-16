@@ -5,35 +5,30 @@
 using namespace std;
 using namespace subspace;
 
-Window::Impl_::Impl_(RenderContext::Impl_& context, const std::string& name, const Config& config) :
-    context_(context)
+Window::Impl::Impl(RenderContext& context, const std::string& name, const Config& config) :
+    instance_(context.getInstance()), device_(context.getDevice())
 {
     sdlWindow_ = createSdlWindow(name.c_str(), config);
     vulkanSurface_ = createVulkanSurface();
     swapchain_ = createSwapchain();
 }
 
-Window::Impl_::~Impl_() {
-    if (context_.instance_) {
-        for (auto& i : swapchain_.imageViews) {
-            context_.device_.destroyImageView(i);
-        }
-        logger.logDebug("Destroyed image views");
-
-        context_.device_.destroySwapchainKHR(swapchain_.swapchain);
-        logger.logDebug("Destroyed window swapchain");
-        
-        context_.instance_.destroySurfaceKHR(vulkanSurface_);
-        logger.logDebug("Destroyed Vulkan surface");
-    } else {
-        logger.logWarning("Could not destroy Vulkan surface; instance already destroyed");
+Window::Impl::~Impl() {
+    for (auto& i : swapchain_.imageViews) {
+        device_.logicalDevice.destroyImageView(i);
     }
+    logger.logDebug("Destroyed image views");
+
+    device_.logicalDevice.destroySwapchainKHR(swapchain_.swapchain);
+    logger.logDebug("Destroyed window swapchain");
+        
+    instance_.instance.destroySurfaceKHR(vulkanSurface_);
 
     SDL_DestroyWindow(sdlWindow_);
     logger.logDebug("Destroyed SDL2 window");
 }
 
-SDL_Window* Window::Impl_::createSdlWindow(const char* name, const Config& config) {
+SDL_Window* Window::Impl::createSdlWindow(const char* name, const Config& config) {
     Uint32 flags = SDL_WINDOW_VULKAN;
 
     if (config.isFullscreen()) {
@@ -56,9 +51,9 @@ SDL_Window* Window::Impl_::createSdlWindow(const char* name, const Config& confi
     return window;
 }
 
-vk::SurfaceKHR Window::Impl_::createVulkanSurface() {
+vk::SurfaceKHR Window::Impl::createVulkanSurface() {
     VkSurfaceKHR surfaceRaw;
-    if (SDL_Vulkan_CreateSurface(sdlWindow_, context_.instance_, &surfaceRaw) != SDL_TRUE) {
+    if (SDL_Vulkan_CreateSurface(sdlWindow_, instance_.instance, &surfaceRaw) != SDL_TRUE) {
         throw VideoException(VideoException::Type::SurfaceCreateFailure);
     }
     logger.logDebug("Created Vulkan surface for window");
@@ -66,8 +61,8 @@ vk::SurfaceKHR Window::Impl_::createVulkanSurface() {
     return vk::SurfaceKHR(surfaceRaw);
 }
 
-vk::SurfaceFormatKHR Window::Impl_::chooseSurfaceFormat() {
-    auto& physicalDevice = context_.physicalDevice_.vulkanDevice;
+vk::SurfaceFormatKHR Window::Impl::chooseSurfaceFormat() {
+    auto& physicalDevice = device_.physicalDevice;
     auto availableFormats = physicalDevice.getSurfaceFormatsKHR(vulkanSurface_);
 
     // Special return value that means any format is allowed
@@ -84,8 +79,8 @@ vk::SurfaceFormatKHR Window::Impl_::chooseSurfaceFormat() {
     return availableFormats[0];
 }
 
-vk::PresentModeKHR Window::Impl_::choosePresentMode() {
-    auto& physicalDevice = context_.physicalDevice_.vulkanDevice;
+vk::PresentModeKHR Window::Impl::choosePresentMode() {
+    auto& physicalDevice = device_.physicalDevice;
     auto availableModes = physicalDevice.getSurfacePresentModesKHR(vulkanSurface_);
 
     // Try for mailbox present mode - triple buffering!
@@ -106,8 +101,8 @@ vk::PresentModeKHR Window::Impl_::choosePresentMode() {
     return vk::PresentModeKHR::eFifo;
 }
 
-vk::Extent2D Window::Impl_::chooseSwapExtent() {
-    auto& device = context_.physicalDevice_.vulkanDevice;
+vk::Extent2D Window::Impl::chooseSwapExtent() {
+    auto& device = device_.physicalDevice;
     vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
 
     // Special case if extent is uint32 max
@@ -129,8 +124,8 @@ vk::Extent2D Window::Impl_::chooseSwapExtent() {
     }
 }
 
-uint32_t Window::Impl_::chooseImageCount() {
-    auto& device = context_.physicalDevice_.vulkanDevice;
+uint32_t Window::Impl::chooseImageCount() {
+    auto& device = device_.physicalDevice;
     vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
 
     uint32_t result = capabilities.minImageCount + 1;
@@ -144,7 +139,7 @@ uint32_t Window::Impl_::chooseImageCount() {
     return result;
 }
 
-Window::Impl_::SwapchainWrapper_ Window::Impl_::createSwapchain() {
+Window::Impl::SwapchainWrapper_ Window::Impl::createSwapchain() {
     SwapchainWrapper_ swapchain;
 
     swapchain.format = chooseSurfaceFormat();
@@ -159,21 +154,21 @@ Window::Impl_::SwapchainWrapper_ Window::Impl_::createSwapchain() {
         vk::CompositeAlphaFlagBitsKHR::eOpaque, swapchain.mode, true);
     logger.logDebug("Created window surface swapchain");
 
-    swapchain.swapchain = context_.device_.createSwapchainKHR(createInfo);
-    swapchain.images = context_.device_.getSwapchainImagesKHR(swapchain.swapchain);
+    swapchain.swapchain = device_.logicalDevice.createSwapchainKHR(createInfo);
+    swapchain.images = device_.logicalDevice.getSwapchainImagesKHR(swapchain.swapchain);
     swapchain.images.resize(numImages);
     swapchain.imageViews = createImageViews(swapchain);
     return swapchain;
 }
 
-vector<vk::ImageView> Window::Impl_::createImageViews(SwapchainWrapper_ swapchain) {
+vector<vk::ImageView> Window::Impl::createImageViews(SwapchainWrapper_ swapchain) {
     vector<vk::ImageView> imageViews;
 
     for (auto& i : swapchain.images) {
         vk::ImageViewCreateInfo createInfo({}, i, vk::ImageViewType::e2D, swapchain.format.format,
         vk::ComponentMapping(),
         vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-        imageViews.push_back(context_.device_.createImageView(createInfo));
+        imageViews.push_back(device_.logicalDevice.createImageView(createInfo));
     }
     logger.logDebug("Created swapchain image views");
 

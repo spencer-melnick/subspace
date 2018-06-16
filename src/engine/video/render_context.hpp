@@ -11,12 +11,16 @@
 
 namespace subspace {
     class Window;
+    class Shader;
 
     /**
      * Class to wrap Vulkan a Vulkan instance, and associated functions.
      */
     class RenderContext {
         public:
+            struct InstanceHandle;
+            struct DeviceHandle;
+
             /**
              * Creates a render context wrapping an underlying Vulkan instance with all 
              * extensions required by a given SDL window.
@@ -26,10 +30,11 @@ namespace subspace {
             RenderContext();
             ~RenderContext();
 
-        private:
-            friend class Window;
+            const InstanceHandle& getInstance() const;
+            const DeviceHandle& getDevice() const;
 
-            class Impl_;
-            std::unique_ptr<Impl_> impl_;
+        private:
+            class Impl;
+            std::unique_ptr<Impl> impl_;
     };
 }

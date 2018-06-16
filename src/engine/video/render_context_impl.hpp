@@ -9,27 +9,31 @@
 #include "render_context.hpp"
 
 namespace subspace {
-    class Window;
+    struct RenderContext::InstanceHandle {
+        vk::Instance instance;
+    };
 
-    class RenderContext::Impl_ {
+    struct RenderContext::DeviceHandle {
+        vk::PhysicalDevice physicalDevice;
+        vk::Device logicalDevice;
+        unsigned usedQueueFamily;
+        std::string deviceName;
+    };
+
+    class RenderContext::Impl {
         public:
-            Impl_();
-            ~Impl_();
+            Impl();
+            ~Impl();
+
+            const InstanceHandle& getInstance() const;
+            const DeviceHandle& getDevice() const;
 
         private:
-            friend class Window;
 
-            struct DeviceWrapper_ {
-                vk::PhysicalDevice vulkanDevice;
-                unsigned usedQueueFamily;
-                std::string name;
-            };
+            using DeviceList_ = std::multimap<unsigned, DeviceHandle>;
 
-            using DeviceList_ = std::multimap<unsigned, DeviceWrapper_>;
-
-            vk::Instance instance_;
-            DeviceWrapper_ physicalDevice_;
-            vk::Device device_;
+            InstanceHandle instance_;
+            DeviceHandle device_;
             vk::Queue queue_;
 
             static const std::vector<const char*> requiredDeviceExtensions_;
@@ -39,13 +43,15 @@ namespace subspace {
             // takes a lot of steps. It's all broken down into separate static functions to make it 
             // more readable.
             DeviceList_ getSupportedDevices(vk::SurfaceKHR& surface);
+
             static SDL_Window* createDummyWindow();
             static vk::SurfaceKHR createDummySurface(SDL_Window* window, vk::Instance& instance);
             static vk::Instance createVulkanInstance(SDL_Window* window);
             static std::vector<const char*> getRequiredWindowExtensions(SDL_Window* window);
-            static int rateDeviceSuitability(DeviceWrapper_& physicalDevice);
-            static vk::Device createLogicalDevice(DeviceWrapper_& physicalDevice);
+            static int rateDeviceSuitability(vk::PhysicalDevice& physicalDevice);
+            static vk::Device createLogicalDevice(vk::PhysicalDevice& physicalDevice,
+                uint32_t queueFamily);
             static bool checkDeviceExtensions(vk::PhysicalDevice& device);
-            static bool findQueueFamily(DeviceWrapper_& device, vk::SurfaceKHR& surface);
+            static int32_t findQueueFamily(vk::PhysicalDevice& physicalDevice, vk::SurfaceKHR& surface);
     };
 }

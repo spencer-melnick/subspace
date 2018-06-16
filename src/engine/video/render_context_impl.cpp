@@ -7,33 +7,45 @@
 using namespace std;
 using namespace subspace;
 
-RenderContext::Impl_::Impl_() {
+RenderContext::Impl::Impl() {
     SDL_Window* dummyWindow = createDummyWindow();
-    instance_ = createVulkanInstance(dummyWindow);
-    vk::SurfaceKHR dummySurface = createDummySurface(dummyWindow, instance_);
+    instance_.instance = createVulkanInstance(dummyWindow);
+    vk::SurfaceKHR dummySurface = createDummySurface(dummyWindow, instance_.instance);
 
     auto devices = getSupportedDevices(dummySurface);
-    physicalDevice_ = (--devices.end())->second;
+    device_ = (--devices.end())->second;
 
-    instance_.destroySurfaceKHR(dummySurface);
+    auto queueFamily = findQueueFamily(device_.physicalDevice, dummySurface);
+
+    instance_.instance.destroySurfaceKHR(dummySurface);
     SDL_DestroyWindow(dummyWindow);
     logger.logDebug("Freeing dummy window and surface");
 
-    logger.logInfo("Using device - {}", physicalDevice_.name);
-    device_ = createLogicalDevice(physicalDevice_);
+    logger.logInfo("Using device - {}", device_.deviceName);
+    device_.logicalDevice = createLogicalDevice(device_.physicalDevice, queueFamily);
 }
 
 
-RenderContext::Impl_::~Impl_() {
-    device_.destroy();
+RenderContext::Impl::~Impl() {
+    device_.logicalDevice.destroy();
     logger.logDebug("Destroyed Vulkan logical device");
 
-    instance_.destroy();
+    instance_.instance.destroy();
     logger.logDebug("Destroyed Vulkan instance");
 }
 
 
-SDL_Window* RenderContext::Impl_::createDummyWindow() {
+const RenderContext::InstanceHandle& RenderContext::Impl::getInstance() const {
+    return instance_;
+}
+
+
+const RenderContext::DeviceHandle& RenderContext::Impl::getDevice() const {
+    return device_;
+}
+
+
+SDL_Window* RenderContext::Impl::createDummyWindow() {
     const auto windowPos = SDL_WINDOWPOS_UNDEFINED;
     const auto windowFlags = SDL_WINDOW_HIDDEN | SDL_WINDOW_VULKAN;
 
@@ -47,7 +59,7 @@ SDL_Window* RenderContext::Impl_::createDummyWindow() {
 }
 
 
-vk::SurfaceKHR RenderContext::Impl_::createDummySurface(SDL_Window* window, vk::Instance& instance) {
+vk::SurfaceKHR RenderContext::Impl::createDummySurface(SDL_Window* window, vk::Instance& instance) {
     logger.logVerbose("Creating dummy surface for extension query");
     VkSurfaceKHR surfaceRaw;
     if (SDL_Vulkan_CreateSurface(window, instance, &surfaceRaw) != SDL_TRUE) {
@@ -59,9 +71,9 @@ vk::SurfaceKHR RenderContext::Impl_::createDummySurface(SDL_Window* window, vk::
 }
 
 
-RenderContext::Impl_::DeviceList_ RenderContext::Impl_::getSupportedDevices(vk::SurfaceKHR& surface) {
+RenderContext::Impl::DeviceList_ RenderContext::Impl::getSupportedDevices(vk::SurfaceKHR& surface) {
     DeviceList_ result;
-    auto devices = instance_.enumeratePhysicalDevices();
+    auto devices = instance_.instance.enumeratePhysicalDevices();
 
     if (devices.empty()) {
         throw VideoException(VideoException::Type::NoVulkanDevices);
@@ -69,14 +81,14 @@ RenderContext::Impl_::DeviceList_ RenderContext::Impl_::getSupportedDevices(vk::
     logger.logVerbose("Found {} supported Vulkan devices:", devices.size());
 
     for (auto& i : devices) {
-        DeviceWrapper_ device;
-        device.vulkanDevice = i;
+        DeviceHandle device;
+        device.physicalDevice = i;
 
-        auto deviceProperties = device.vulkanDevice.getProperties();
-        device.name = string(deviceProperties.deviceName);
+        auto deviceProperties = device.physicalDevice.getProperties();
+        device.deviceName = string(deviceProperties.deviceName);
 
-        if (findQueueFamily(device, surface) && checkDeviceExtensions(device.vulkanDevice)) {
-            result.insert({rateDeviceSuitability(device), device});
+        if (findQueueFamily(device.physicalDevice, surface) != -1 && checkDeviceExtensions(device.physicalDevice)) {
+            result.insert({rateDeviceSuitability(device.physicalDevice), device});
         }
     }
 
@@ -88,7 +100,7 @@ RenderContext::Impl_::DeviceList_ RenderContext::Impl_::getSupportedDevices(vk::
 }
 
 
-vk::Instance RenderContext::Impl_::createVulkanInstance(SDL_Window* window) {
+vk::Instance RenderContext::Impl::createVulkanInstance(SDL_Window* window) {
     vk::ApplicationInfo appInfo("Subspace", 1, nullptr, 0, VK_MAKE_VERSION(1, 0, 0));
     vector<const char*> extensions = getRequiredWindowExtensions(window);
 
@@ -104,7 +116,7 @@ vk::Instance RenderContext::Impl_::createVulkanInstance(SDL_Window* window) {
 }
 
 
-vector<const char*> RenderContext::Impl_::getRequiredWindowExtensions(SDL_Window* window) {
+vector<const char*> RenderContext::Impl::getRequiredWindowExtensions(SDL_Window* window) {
     vector<const char*> result;
     unsigned numExtensions;
     const char** extensionList;
@@ -129,21 +141,21 @@ vector<const char*> RenderContext::Impl_::getRequiredWindowExtensions(SDL_Window
 }
 
 
-int RenderContext::Impl_::rateDeviceSuitability(DeviceWrapper_& physicalDevice) {
+int RenderContext::Impl::rateDeviceSuitability(vk::PhysicalDevice& physicalDevice) {
     int score = 0;
-    auto properties = physicalDevice.vulkanDevice.getProperties();
+    auto properties = physicalDevice.getProperties();
 
     switch (properties.deviceType) {
         case vk::PhysicalDeviceType::eDiscreteGpu:
             score += 1000000;
-            logger.logVerbose("Discrete GPU - {}", physicalDevice.name);
+            logger.logVerbose("Discrete GPU");
             break;
         case vk::PhysicalDeviceType::eIntegratedGpu:
             score += 50000;
-            logger.logVerbose("Integrated GPU - {}", physicalDevice.name);
+            logger.logVerbose("Integrated GPU");
             break;
         default:
-            logger.logVerbose("CPU or virtual device - {}", physicalDevice.name);
+            logger.logVerbose("CPU or virtual device");
             break;
     }
 
@@ -154,18 +166,18 @@ int RenderContext::Impl_::rateDeviceSuitability(DeviceWrapper_& physicalDevice) 
 }
 
 
-vk::Device RenderContext::Impl_::createLogicalDevice(DeviceWrapper_& physicalDevice) {
+vk::Device RenderContext::Impl::createLogicalDevice(vk::PhysicalDevice& physicalDevice, uint32_t queueFamily) {
     float queuePriority = 1.0f;
     const auto& extensions = requiredDeviceExtensions_;
     
-    vk::DeviceQueueCreateInfo queueInfo({}, physicalDevice.usedQueueFamily, 1, &queuePriority);
+    vk::DeviceQueueCreateInfo queueInfo({}, queueFamily, 1, &queuePriority);
     vk::DeviceCreateInfo deviceInfo({}, 1, &queueInfo, 0, nullptr, extensions.size(), extensions.data());
 
-    return physicalDevice.vulkanDevice.createDevice(deviceInfo);
+    return physicalDevice.createDevice(deviceInfo);
 }
 
 
-bool RenderContext::Impl_::checkDeviceExtensions(vk::PhysicalDevice& device) {
+bool RenderContext::Impl::checkDeviceExtensions(vk::PhysicalDevice& device) {
     auto availableExtensions = device.enumerateDeviceExtensionProperties();
     bool foundExtension;
 
@@ -189,26 +201,25 @@ bool RenderContext::Impl_::checkDeviceExtensions(vk::PhysicalDevice& device) {
 }
 
 
-bool RenderContext::Impl_::findQueueFamily(DeviceWrapper_& device, vk::SurfaceKHR& surface) {
+int32_t RenderContext::Impl::findQueueFamily(vk::PhysicalDevice& physicalDevice, vk::SurfaceKHR& surface) {
     const auto requriredFlags = vk::QueueFlagBits::eGraphics;
-    auto queueProperties = device.vulkanDevice.getQueueFamilyProperties();
+    auto queueProperties = physicalDevice.getQueueFamilyProperties();
 
     for (unsigned i = 0; i < queueProperties.size(); i++) {
         auto family = queueProperties[i];
 
         bool flagSupport = (family.queueFlags & requriredFlags) == requriredFlags;
-        bool presentSupport = device.vulkanDevice.getSurfaceSupportKHR(i, surface);
+        bool presentSupport = physicalDevice.getSurfaceSupportKHR(i, surface);
 
         if (family.queueCount > 0 && flagSupport && presentSupport) {
-            device.usedQueueFamily = i;
-            return true;
+            return i;
         }
     }
     
-    logger.logWarning("{} does not have the required queue families", device.name);
-    return false;
+    logger.logWarning("Device does not have the required queue families");
+    return -1;
 }
 
-const vector<const char*> RenderContext::Impl_::requiredDeviceExtensions_ = {
+const vector<const char*> RenderContext::Impl::requiredDeviceExtensions_ = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };

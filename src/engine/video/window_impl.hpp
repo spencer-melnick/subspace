@@ -12,10 +12,10 @@
 using namespace std;
 using namespace subspace;
 
-class Window::Impl_ {
+class Window::Impl {
     public:
-        Impl_(RenderContext::Impl_& context, const std::string& name, const Config& config);
-        ~Impl_();
+        Impl(RenderContext& context, const std::string& name, const Config& config);
+        ~Impl();
         
     private:
         struct SwapchainWrapper_ {
@@ -27,7 +27,8 @@ class Window::Impl_ {
         };
 
         SDL_Window* sdlWindow_;
-        RenderContext::Impl_& context_;
+        const RenderContext::InstanceHandle& instance_;
+        const RenderContext::DeviceHandle& device_;
         vk::SurfaceKHR vulkanSurface_;
         SwapchainWrapper_ swapchain_;
 
