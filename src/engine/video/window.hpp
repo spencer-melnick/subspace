@@ -11,11 +11,14 @@
 #include <string>
 #include <memory>
 
-#include "video_exception.hpp"
 #include "render_context.hpp"
 #include "../util/config.hpp"
 
 namespace subspace {
+    class SdlWindow;
+    class VulkanSurface;
+    class VulkanSwapchain;
+
     class Window {
         /**
          * Class that provides simple window functionality by wrapping the SDL2 window
@@ -23,11 +26,12 @@ namespace subspace {
          */
 
         public:
-            Window(RenderContext& context, const std::string& name, const Config& config);
+            Window(const RenderContext& context, const std::string& name, const Config& config);
             ~Window();
 
         private:
-            class Impl;
-            std::unique_ptr<Impl> impl_;
+            std::unique_ptr<SdlWindow> sdlWindow_;
+            std::unique_ptr<VulkanSurface> vulkanSurface_;
+            std::unique_ptr<VulkanSwapchain> vulkanSwapchain_;
     };
 }

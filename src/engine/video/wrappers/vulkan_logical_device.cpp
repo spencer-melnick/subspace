@@ -21,3 +21,7 @@ VulkanLogicalDevice::~VulkanLogicalDevice() {
     handle_.destroy();
     logger.logDebug("Destroyed logical device");
 }
+
+const vk::Device& VulkanLogicalDevice::getHandle() const {
+    return handle_;
+}

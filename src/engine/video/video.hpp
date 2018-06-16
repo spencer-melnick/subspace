@@ -9,8 +9,8 @@
  */
 
 #include "video_exception.hpp"
-// #include "window.hpp"
 #include "render_context.hpp"
+#include "window.hpp"
 
 namespace subspace {
     /**

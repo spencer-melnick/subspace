@@ -1,5 +1,6 @@
 #include <exception>
 #include <fstream>
+#include <thread>
 
 #include "engine/subspace.hpp"
 
@@ -17,7 +18,9 @@ int main() {
         Config config {"rc/config.json"};
 
         RenderContext context;
-        // Window window(context, "Subspace Engine", config);
+        Window window(context, "Subspace Engine", config);
+
+        this_thread::sleep_for(5s);
     } catch (const exception& e) {
         logger.logError(e.what());
     }

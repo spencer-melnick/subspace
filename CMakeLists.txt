@@ -37,13 +37,11 @@ set(SOURCES
     "src/engine/video/wrappers/vulkan_logical_device.cpp"
     "src/engine/video/wrappers/vulkan_physical_device.cpp"
     "src/engine/video/wrappers/vulkan_surface.cpp"
+    "src/engine/video/wrappers/vulkan_swapchain.cpp"
     "src/engine/video/render_context.cpp"
-    # "src/engine/video/render_context_impl.cpp"
-	# "src/engine/video/swapchain.cpp"
     "src/engine/video/video_exception.cpp"
     "src/engine/video/video.cpp"
-    # "src/engine/video/window.cpp"
-    # "src/engine/video/window_impl.cpp"
+    "src/engine/video/window.cpp"
 )
 include_directories("src")
 
