@@ -11,6 +11,7 @@
 
 namespace subspace {
     class Window;
+	class SwapChain;
 
     /**
      * Class to wrap Vulkan a Vulkan instance, and associated functions.
@@ -28,6 +29,7 @@ namespace subspace {
 
         private:
             friend class Window;
+			friend class SwapChain;
 
             class Impl_;
             std::unique_ptr<Impl_> impl_;

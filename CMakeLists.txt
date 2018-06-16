@@ -33,6 +33,7 @@ set(SOURCES
     "src/engine/util/logger.cpp"
     "src/engine/video/render_context.cpp"
     "src/engine/video/render_context_impl.cpp"
+	"src/engine/video/swapchain.cpp"
     "src/engine/video/video_exception.cpp"
     "src/engine/video/video.cpp"
     "src/engine/video/window.cpp"

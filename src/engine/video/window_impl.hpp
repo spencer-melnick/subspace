@@ -8,6 +8,7 @@
 
 #include "window.hpp"
 #include "render_context_impl.hpp"
+#include "swapchain.hpp"
 
 using namespace std;
 using namespace subspace;
@@ -18,26 +19,13 @@ class Window::Impl_ {
         ~Impl_();
         
     private:
-        struct SwapchainWrapper_ {
-            vk::SwapchainKHR swapchain;
-            vk::SurfaceFormatKHR format;
-            vk::PresentModeKHR mode;
-            std::vector<vk::Image> images;
-            std::vector<vk::ImageView> imageViews;
-        };
 
         SDL_Window* sdlWindow_;
         RenderContext::Impl_& context_;
         vk::SurfaceKHR vulkanSurface_;
-        SwapchainWrapper_ swapchain_;
+        SwapChain swapchain_;
 
         static SDL_Window* createSdlWindow(const char* name, const Config& config);
 
         vk::SurfaceKHR createVulkanSurface();
-        vk::SurfaceFormatKHR chooseSurfaceFormat();
-        vk::PresentModeKHR choosePresentMode();
-        vk::Extent2D chooseSwapExtent();
-        uint32_t chooseImageCount();
-        SwapchainWrapper_ createSwapchain();
-        std::vector<vk::ImageView> createImageViews(SwapchainWrapper_ swapchain);
 };

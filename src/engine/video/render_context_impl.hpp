@@ -10,6 +10,7 @@
 
 namespace subspace {
     class Window;
+	class SwapChain;
 
     class RenderContext::Impl_ {
         public:
@@ -18,6 +19,7 @@ namespace subspace {
 
         private:
             friend class Window;
+			friend class SwapChain;
 
             struct DeviceWrapper_ {
                 vk::PhysicalDevice vulkanDevice;

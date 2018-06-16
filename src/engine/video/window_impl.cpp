@@ -10,7 +10,7 @@ Window::Impl_::Impl_(RenderContext::Impl_& context, const std::string& name, con
 {
     sdlWindow_ = createSdlWindow(name.c_str(), config);
     vulkanSurface_ = createVulkanSurface();
-    swapchain_ = createSwapchain();
+    swapchain_ = SwapChain::SwapChain(vulkanSurface_, context_);
 }
 
 Window::Impl_::~Impl_() {
@@ -82,100 +82,4 @@ vk::SurfaceFormatKHR Window::Impl_::chooseSurfaceFormat() {
     }
 
     return availableFormats[0];
-}
-
-vk::PresentModeKHR Window::Impl_::choosePresentMode() {
-    auto& physicalDevice = context_.physicalDevice_.vulkanDevice;
-    auto availableModes = physicalDevice.getSurfacePresentModesKHR(vulkanSurface_);
-
-    // Try for mailbox present mode - triple buffering!
-    for (const auto& i : availableModes) {
-        if (i == vk::PresentModeKHR::eMailbox) {
-            return i;
-        }
-    }
-
-    // Immediate mode has best support
-    for (const auto& i : availableModes) {
-        if (i == vk::PresentModeKHR::eImmediate) {
-            return i;
-        }
-    }
-
-    // FIFO is guaranteed, but not always well supported
-    return vk::PresentModeKHR::eFifo;
-}
-
-vk::Extent2D Window::Impl_::chooseSwapExtent() {
-    auto& device = context_.physicalDevice_.vulkanDevice;
-    vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
-
-    // Special case if extent is uint32 max
-    if (capabilities.currentExtent.width == numeric_limits<uint32_t>::max()) {
-        int width, height;
-        SDL_Vulkan_GetDrawableSize(sdlWindow_, &width, &height);
-
-        vk::Extent2D result {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
-
-        result.width = max(result.width, capabilities.minImageExtent.width);
-        result.width = min(result.width, capabilities.maxImageExtent.width);
-
-        result.height = max(result.height, capabilities.minImageExtent.height);
-        result.height = min(result.height, capabilities.maxImageExtent.height);
-
-        return result;
-    } else {
-        return capabilities.currentExtent;
-    }
-}
-
-uint32_t Window::Impl_::chooseImageCount() {
-    auto& device = context_.physicalDevice_.vulkanDevice;
-    vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
-
-    uint32_t result = capabilities.minImageCount + 1;
-
-    // MaxImageCount of 0 means that there is no limit
-    // If we exceed the limit, go with the limit
-    if (result > capabilities.maxImageCount && capabilities.maxImageCount > 0) {
-        return capabilities.maxImageCount;
-    }
-
-    return result;
-}
-
-Window::Impl_::SwapchainWrapper_ Window::Impl_::createSwapchain() {
-    SwapchainWrapper_ swapchain;
-
-    swapchain.format = chooseSurfaceFormat();
-    swapchain.mode = choosePresentMode();
-    auto extent = chooseSwapExtent();
-    uint32_t numImages = chooseImageCount();
-
-    vk::SwapchainCreateInfoKHR createInfo(
-        {}, vulkanSurface_, numImages, swapchain.format.format, 
-        swapchain.format.colorSpace, extent, 1, vk::ImageUsageFlagBits::eColorAttachment,
-        vk::SharingMode::eExclusive, 0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
-        vk::CompositeAlphaFlagBitsKHR::eOpaque, swapchain.mode, true);
-    logger.logDebug("Created window surface swapchain");
-
-    swapchain.swapchain = context_.device_.createSwapchainKHR(createInfo);
-    swapchain.images = context_.device_.getSwapchainImagesKHR(swapchain.swapchain);
-    swapchain.images.resize(numImages);
-    swapchain.imageViews = createImageViews(swapchain);
-    return swapchain;
-}
-
-vector<vk::ImageView> Window::Impl_::createImageViews(SwapchainWrapper_ swapchain) {
-    vector<vk::ImageView> imageViews;
-
-    for (auto& i : swapchain.images) {
-        vk::ImageViewCreateInfo createInfo({}, i, vk::ImageViewType::e2D, swapchain.format.format,
-        vk::ComponentMapping(),
-        vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-        imageViews.push_back(context_.device_.createImageView(createInfo));
-    }
-    logger.logDebug("Created swapchain image views");
-
-    return imageViews;
 }
