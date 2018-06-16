@@ -92,7 +92,7 @@ vk::Instance RenderContext::Impl_::createVulkanInstance(SDL_Window* window) {
     vk::ApplicationInfo appInfo("Subspace", 1, nullptr, 0, VK_MAKE_VERSION(1, 0, 0));
     vector<const char*> extensions = getRequiredWindowExtensions(window);
 
-    vk::InstanceCreateInfo instanceInfo({}, &appInfo, 0, nullptr, extensions.size(), extensions.data());
+    vk::InstanceCreateInfo instanceInfo({}, &appInfo, 0, nullptr, static_cast<uint32_t>(extensions.size()), extensions.data());
     vk::Instance instance;
 
     if (vk::createInstance(&instanceInfo, nullptr, &instance) != vk::Result::eSuccess) {
@@ -159,7 +159,7 @@ vk::Device RenderContext::Impl_::createLogicalDevice(DeviceWrapper_& physicalDev
     const auto& extensions = requiredDeviceExtensions_;
     
     vk::DeviceQueueCreateInfo queueInfo({}, physicalDevice.usedQueueFamily, 1, &queuePriority);
-    vk::DeviceCreateInfo deviceInfo({}, 1, &queueInfo, 0, nullptr, extensions.size(), extensions.data());
+    vk::DeviceCreateInfo deviceInfo({}, 1, &queueInfo, 0, nullptr, static_cast<uint32_t>(extensions.size()), extensions.data());
 
     return physicalDevice.vulkanDevice.createDevice(deviceInfo);
 }
@@ -197,7 +197,7 @@ bool RenderContext::Impl_::findQueueFamily(DeviceWrapper_& device, vk::SurfaceKH
         auto family = queueProperties[i];
 
         bool flagSupport = (family.queueFlags & requriredFlags) == requriredFlags;
-        bool presentSupport = device.vulkanDevice.getSurfaceSupportKHR(i, surface);
+        bool presentSupport = device.vulkanDevice.getSurfaceSupportKHR(i, surface) != 0;
 
         if (family.queueCount > 0 && flagSupport && presentSupport) {
             device.usedQueueFamily = i;

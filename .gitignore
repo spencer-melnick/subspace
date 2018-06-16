@@ -33,6 +33,7 @@
 
 # CMake Files
 bin
+build
 build/CMakeFiles
 build/generated
 CMakeCache.txt

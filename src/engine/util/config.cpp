@@ -20,7 +20,7 @@ namespace subspace {
             try {
                 file >> new_config;
                 config_.merge_patch(new_config);
-            } catch (json::parse_error& e) {
+            } catch (json::parse_error&) {
                 // Swallow parse errors - we still have a good config from our
                 // default
             }
