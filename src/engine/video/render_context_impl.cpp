@@ -104,7 +104,7 @@ vk::Instance RenderContext::Impl::createVulkanInstance(SDL_Window* window) {
     vk::ApplicationInfo appInfo("Subspace", 1, nullptr, 0, VK_MAKE_VERSION(1, 0, 0));
     vector<const char*> extensions = getRequiredWindowExtensions(window);
 
-    vk::InstanceCreateInfo instanceInfo({}, &appInfo, 0, nullptr, extensions.size(), extensions.data());
+    vk::InstanceCreateInfo instanceInfo({}, &appInfo, 0, nullptr, static_cast<uint32_t>(extensions.size()), extensions.data());
     vk::Instance instance;
 
     if (vk::createInstance(&instanceInfo, nullptr, &instance) != vk::Result::eSuccess) {
@@ -171,7 +171,7 @@ vk::Device RenderContext::Impl::createLogicalDevice(vk::PhysicalDevice& physical
     const auto& extensions = requiredDeviceExtensions_;
     
     vk::DeviceQueueCreateInfo queueInfo({}, queueFamily, 1, &queuePriority);
-    vk::DeviceCreateInfo deviceInfo({}, 1, &queueInfo, 0, nullptr, extensions.size(), extensions.data());
+    vk::DeviceCreateInfo deviceInfo({}, 1, &queueInfo, 0, nullptr, static_cast<uint32_t>(extensions.size()), extensions.data());
 
     return physicalDevice.createDevice(deviceInfo);
 }

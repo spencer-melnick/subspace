@@ -10,9 +10,6 @@
 #include <memory>
 
 namespace subspace {
-    class Window;
-    class Shader;
-
     /**
      * Class to wrap Vulkan a Vulkan instance, and associated functions.
      */
