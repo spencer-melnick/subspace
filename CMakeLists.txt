@@ -32,13 +32,18 @@ set(SOURCES
     "src/engine/util/config.cpp"
     "src/engine/util/logger.cpp"
     "src/engine/util/simple_file.cpp"
+    "src/engine/video/wrappers/sdl_window.cpp"
+    "src/engine/video/wrappers/vulkan_instance.cpp"
+    "src/engine/video/wrappers/vulkan_logical_device.cpp"
+    "src/engine/video/wrappers/vulkan_physical_device.cpp"
+    "src/engine/video/wrappers/vulkan_surface.cpp"
     "src/engine/video/render_context.cpp"
-    "src/engine/video/render_context_impl.cpp"
-	"src/engine/video/swapchain.cpp"
+    # "src/engine/video/render_context_impl.cpp"
+	# "src/engine/video/swapchain.cpp"
     "src/engine/video/video_exception.cpp"
     "src/engine/video/video.cpp"
-    "src/engine/video/window.cpp"
-    "src/engine/video/window_impl.cpp"
+    # "src/engine/video/window.cpp"
+    # "src/engine/video/window_impl.cpp"
 )
 include_directories("src")
 

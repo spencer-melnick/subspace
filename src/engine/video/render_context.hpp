@@ -13,11 +13,13 @@ namespace subspace {
     /**
      * Class to wrap Vulkan a Vulkan instance, and associated functions.
      */
+
+    class VulkanInstance;
+    class VulkanPhysicalDevice;
+    class VulkanLogicalDevice;
+
     class RenderContext {
         public:
-            struct InstanceHandle;
-            struct DeviceHandle;
-
             /**
              * Creates a render context wrapping an underlying Vulkan instance with all 
              * extensions required by a given SDL window.
@@ -27,11 +29,13 @@ namespace subspace {
             RenderContext();
             ~RenderContext();
 
-            const InstanceHandle& getInstance() const;
-            const DeviceHandle& getDevice() const;
+            const VulkanInstance& getInstance() const;
+            const VulkanPhysicalDevice& getPhysicalDevice() const;
+            const VulkanLogicalDevice& getLogicalDevice() const;
 
         private:
-            class Impl;
-            std::unique_ptr<Impl> impl_;
+            std::unique_ptr<VulkanInstance> instance_;
+            const VulkanPhysicalDevice* physicalDevice_;
+            std::unique_ptr<VulkanLogicalDevice> logicalDevice_;
     };
 }

@@ -17,10 +17,11 @@ int main() {
         Config config {"rc/config.json"};
 
         RenderContext context;
-        Window window(context, "Subspace Engine", config);
+        // Window window(context, "Subspace Engine", config);
     } catch (const exception& e) {
         logger.logError(e.what());
     }
+
     terminateVideo();
 
     return 0;
