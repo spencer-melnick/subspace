@@ -1,11 +1,12 @@
 #include "swapchain.hpp"
 #include "../util/logger.hpp"
+#include <limits>
 
 //IM SORRY THE NAMING CONVENTIONS ARE WEIRD STEPHEN WROTE ThIS CODE
 using namespace subspace;
 
 SwapChain::SwapChain(vk::SurfaceKHR& vulkanSurface, RenderContext::Impl_& context)
-	:context_(context)
+	:vulkanSurface_(vulkanSurface), context_(context)
 {
 	format_ = chooseSurfaceFormat();
 	mode_ = choosePresentMode();
@@ -19,10 +20,19 @@ SwapChain::SwapChain(vk::SurfaceKHR& vulkanSurface, RenderContext::Impl_& contex
 		vk::CompositeAlphaFlagBitsKHR::eOpaque, mode_, true);
 	logger.logDebug("Created window surface swapchain");
 
-	swapchain_ = context_.device_.createSwapchainKHR(createInfo);
-	images_ = context_.device_.getSwapchainImagesKHR(swapchain_);
+	swapchainKHR = context_.device_.createSwapchainKHR(createInfo);
+	images_ = context_.device_.getSwapchainImagesKHR(swapchainKHR);
 	images_.resize(numImages);
-	imageViews_ = createImageViews(n);
+	imageViews = createImageViews();
+}
+
+SwapChain::~SwapChain() {
+	for (auto& i : imageViews) {
+		context_.device_.destroyImageView(i);
+	}
+	logger.logDebug("Destroyed image views");
+	context_.device_.destroySwapchainKHR(swapchainKHR);
+	logger.logDebug("Destroyed window swapchain");
 }
 
 vk::PresentModeKHR SwapChain::choosePresentMode()
@@ -82,17 +92,16 @@ vk::Extent2D SwapChain::chooseSwapExtent() {
 	vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
 
 	// Special case if extent is uint32 max
-	if (capabilities.currentExtent.width == numeric_limits<uint32_t>::max()) {
+	if (capabilities.currentExtent.width == std::numeric_limits<uint32_t>::max()) {
 		int width, height;
 		SDL_Vulkan_GetDrawableSize(sdlWindow_, &width, &height);
 
 		vk::Extent2D result{ static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
+		result.width = std::max(result.width, capabilities.minImageExtent.width);
+		result.width = std::min(result.width, capabilities.maxImageExtent.width);
 
-		result.width = max(result.width, capabilities.minImageExtent.width);
-		result.width = min(result.width, capabilities.maxImageExtent.width);
-
-		result.height = max(result.height, capabilities.minImageExtent.height);
-		result.height = min(result.height, capabilities.maxImageExtent.height);
+		result.height = std::max(result.height, capabilities.minImageExtent.height);
+		result.height = std::min(result.height, capabilities.maxImageExtent.height);
 
 		return result;
 	}
@@ -101,6 +110,20 @@ vk::Extent2D SwapChain::chooseSwapExtent() {
 	}
 }
 
-VkSwapchainKHR getSwapChain() {
-	return swapchain_;
+vk::SurfaceFormatKHR SwapChain::chooseSurfaceFormat() {
+	auto& physicalDevice = context_.physicalDevice_.vulkanDevice;
+	auto availableFormats = physicalDevice.getSurfaceFormatsKHR(vulkanSurface_);
+
+	// Special return value that means any format is allowed
+	if (availableFormats.size() == 1 && availableFormats[0].format == vk::Format::eUndefined) {
+		return{ vk::Format::eB8G8R8A8Snorm, vk::ColorSpaceKHR::eSrgbNonlinear };
+	}
+
+	for (const auto& i : availableFormats) {
+		if (i.format == vk::Format::eB8G8R8A8Snorm && i.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+			return i;
+		}
+	}
+
+	return availableFormats[0];
 }

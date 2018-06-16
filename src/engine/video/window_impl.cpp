@@ -6,23 +6,13 @@ using namespace std;
 using namespace subspace;
 
 Window::Impl_::Impl_(RenderContext::Impl_& context, const std::string& name, const Config& config) :
-    context_(context)
-{
-    sdlWindow_ = createSdlWindow(name.c_str(), config);
-    vulkanSurface_ = createVulkanSurface();
-    swapchain_ = SwapChain::SwapChain(vulkanSurface_, context_);
-}
+    context_(context), sdlWindow_(createSdlWindow(name.c_str(), config)), vulkanSurface_(createVulkanSurface()),
+	swapchain_(vulkanSurface_, context_)
+{}
 
 Window::Impl_::~Impl_() {
     if (context_.instance_) {
-        for (auto& i : swapchain_.imageViews) {
-            context_.device_.destroyImageView(i);
-        }
-        logger.logDebug("Destroyed image views");
 
-        context_.device_.destroySwapchainKHR(swapchain_.swapchain);
-        logger.logDebug("Destroyed window swapchain");
-        
         context_.instance_.destroySurfaceKHR(vulkanSurface_);
         logger.logDebug("Destroyed Vulkan surface");
     } else {
@@ -64,22 +54,4 @@ vk::SurfaceKHR Window::Impl_::createVulkanSurface() {
     logger.logDebug("Created Vulkan surface for window");
 
     return vk::SurfaceKHR(surfaceRaw);
-}
-
-vk::SurfaceFormatKHR Window::Impl_::chooseSurfaceFormat() {
-    auto& physicalDevice = context_.physicalDevice_.vulkanDevice;
-    auto availableFormats = physicalDevice.getSurfaceFormatsKHR(vulkanSurface_);
-
-    // Special return value that means any format is allowed
-    if (availableFormats.size() == 1 && availableFormats[0].format == vk::Format::eUndefined) {
-        return {vk::Format::eB8G8R8A8Snorm, vk::ColorSpaceKHR::eSrgbNonlinear};
-    }
-
-    for (const auto& i : availableFormats) {
-        if (i.format == vk::Format::eB8G8R8A8Snorm && i.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
-            return i;
-        }
-    }
-
-    return availableFormats[0];
 }
