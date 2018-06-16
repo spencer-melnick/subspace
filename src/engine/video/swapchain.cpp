@@ -1,11 +1,12 @@
 #include "swapchain.hpp"
-#include "../util/logger.hpp"
+
 #include <limits>
 
-//IM SORRY THE NAMING CONVENTIONS ARE WEIRD STEPHEN WROTE ThIS CODE
+#include "../util/logger.hpp"
+
 using namespace subspace;
 
-SwapChain::SwapChain(SDL_Window* window, vk::SurfaceKHR& vulkanSurface, const RenderContext::DeviceHandle& device) :
+Swapchain::Swapchain(SDL_Window* window, vk::SurfaceKHR& vulkanSurface, const RenderContext::DeviceHandle& device) :
 	vulkanSurface_(vulkanSurface), device_(device)
 {
 	format_ = chooseSurfaceFormat();
@@ -26,7 +27,7 @@ SwapChain::SwapChain(SDL_Window* window, vk::SurfaceKHR& vulkanSurface, const Re
 	imageViews = createImageViews();
 }
 
-SwapChain::~SwapChain() {
+Swapchain::~Swapchain() {
 	for (auto& i : imageViews) {
 		device_.logicalDevice.destroyImageView(i);
 	}
@@ -35,8 +36,7 @@ SwapChain::~SwapChain() {
 	logger.logDebug("Destroyed window swapchain");
 }
 
-vk::PresentModeKHR SwapChain::choosePresentMode()
-{
+vk::PresentModeKHR Swapchain::choosePresentMode() {
 	auto& physicalDevice = device_.physicalDevice;
 	auto availableModes = physicalDevice.getSurfacePresentModesKHR(vulkanSurface_);
 
@@ -58,7 +58,7 @@ vk::PresentModeKHR SwapChain::choosePresentMode()
 	return vk::PresentModeKHR::eFifo;
 }
 
-uint32_t SwapChain::chooseImageCount() {
+uint32_t Swapchain::chooseImageCount() {
 	auto& device = device_.physicalDevice;
 	vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
 
@@ -73,7 +73,7 @@ uint32_t SwapChain::chooseImageCount() {
 	return result;
 }
 
-std::vector<vk::ImageView> SwapChain::createImageViews() {
+std::vector<vk::ImageView> Swapchain::createImageViews() {
 	std::vector<vk::ImageView> imageViews;
 
 	for (auto& i : images_) {
@@ -87,7 +87,7 @@ std::vector<vk::ImageView> SwapChain::createImageViews() {
 	return imageViews;
 }
 
-vk::Extent2D SwapChain::chooseSwapExtent(SDL_Window* window) {
+vk::Extent2D Swapchain::chooseSwapExtent(SDL_Window* window) {
 	auto& device = device_.physicalDevice;
 	vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_);
 
@@ -110,7 +110,7 @@ vk::Extent2D SwapChain::chooseSwapExtent(SDL_Window* window) {
 	}
 }
 
-vk::SurfaceFormatKHR SwapChain::chooseSurfaceFormat() {
+vk::SurfaceFormatKHR Swapchain::chooseSurfaceFormat() {
 	auto& physicalDevice = device_.physicalDevice;
 	auto availableFormats = physicalDevice.getSurfaceFormatsKHR(vulkanSurface_);
 

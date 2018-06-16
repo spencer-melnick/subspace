@@ -24,7 +24,7 @@ class Window::Impl {
         const RenderContext::InstanceHandle& instance_;
         const RenderContext::DeviceHandle& device_;
         vk::SurfaceKHR vulkanSurface_;
-        SwapChain swapchain_;
+        Swapchain swapchain_;
 
         static SDL_Window* createSdlWindow(const char* name, const Config& config);
 

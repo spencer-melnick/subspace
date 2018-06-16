@@ -9,16 +9,16 @@
 #include "render_context_impl.hpp"
 
 namespace subspace {
-	class SwapChain
-	{
+	class Swapchain {
 	public:
-		SwapChain(SDL_Window* window, vk::SurfaceKHR& vulkanSurface, const RenderContext::DeviceHandle& device);
-		~SwapChain();
+		Swapchain(SDL_Window* window, vk::SurfaceKHR& vulkanSurface,
+			const RenderContext::DeviceHandle& device);
+		~Swapchain();
 		std::vector<vk::ImageView> imageViews;
 		VkSwapchainKHR swapchainKHR;
 
 	private:
-		vk::SurfaceKHR vulkanSurface_;
+		vk::SurfaceKHR& vulkanSurface_;
 		const RenderContext::DeviceHandle& device_;
 		vk::SurfaceFormatKHR format_;
 		vk::PresentModeKHR mode_;
