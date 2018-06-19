@@ -18,7 +18,10 @@ namespace subspace {
             VulkanInstance();
             ~VulkanInstance();
 
-            const vk::Instance& getHandle() const;
+            operator VkInstance() const;
+            operator const vk::Instance&() const;
+            const vk::Instance* operator->() const;
+
             const PhysicalDeviceList& getPhysicalDevices() const;
 
         private:

@@ -30,8 +30,16 @@ VulkanInstance::~VulkanInstance() {
     logger.logDebug("Destroyed Vulkan instance");
 }
 
-const vk::Instance& VulkanInstance::getHandle() const {
+VulkanInstance::operator VkInstance() const {
+    return static_cast<VkInstance>(handle_);
+}
+
+VulkanInstance::operator const vk::Instance&() const {
     return handle_;
+}
+
+const vk::Instance* VulkanInstance::operator->() const {
+    return &handle_;
 }
 
 const VulkanInstance::PhysicalDeviceList& VulkanInstance::getPhysicalDevices() const {
@@ -39,12 +47,12 @@ const VulkanInstance::PhysicalDeviceList& VulkanInstance::getPhysicalDevices() c
 }
 
 void VulkanInstance::queryPhysicalDevices(const SdlWindow& dummyWindow) {
-    VulkanSurface dummySurface(handle_, dummyWindow.getHandle());
+    VulkanSurface dummySurface(*this, dummyWindow);
 
     auto physicalDevices = handle_.enumeratePhysicalDevices();
 
     for (auto& i : physicalDevices) {
-        VulkanPhysicalDevice device(i, dummySurface.getHandle());
+        VulkanPhysicalDevice device(i, dummySurface);
 
         if (device.isUsable()) {
             physicalDevices_.insert({device.getRating(), device});

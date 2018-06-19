@@ -12,7 +12,8 @@ namespace subspace {
             SdlWindow(const std::string& name, unsigned displayNum, unsigned width, unsigned height, uint32_t flags);
             ~SdlWindow();
 
-            SDL_Window* getHandle() const;
+            operator SDL_Window*() const;
+
             std::vector<const char*> listRequiredExtensions() const;
 
         private:

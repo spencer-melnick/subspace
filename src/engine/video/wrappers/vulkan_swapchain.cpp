@@ -17,58 +17,68 @@ using namespace subspace;
 VulkanSwapchain::VulkanSwapchain(const RenderContext& context, const SdlWindow& window, const VulkanSurface& vulkanSurface) :
 	context_(context), vulkanSurface_(vulkanSurface)
 {
-	format_ = chooseSurfaceFormat();
-	mode_ = choosePresentMode();
+	chooseSurfaceFormat();
+	choosePresentMode();
 	auto extent = chooseSwapExtent(window);
 	uint32_t numImages = chooseImageCount();
 
 	vk::SwapchainCreateInfoKHR createInfo(
-	{}, vulkanSurface_.getHandle(), numImages, format_.format,
+	{}, vulkanSurface_, numImages, format_.format,
 		format_.colorSpace, extent, 1, vk::ImageUsageFlagBits::eColorAttachment,
 		vk::SharingMode::eExclusive, 0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
 		vk::CompositeAlphaFlagBitsKHR::eOpaque, mode_, true);
 	logger.logDebug("Created window surface swapchain");
 
-	swapchainKHR = context_.getLogicalDevice().getHandle().createSwapchainKHR(createInfo);
-	images_ = context_.getLogicalDevice().getHandle().getSwapchainImagesKHR(swapchainKHR);
+	handle_ = context_.getLogicalDevice()->createSwapchainKHR(createInfo);
+	images_ = context_.getLogicalDevice()->getSwapchainImagesKHR(handle_);
 	images_.resize(numImages);
-	imageViews = createImageViews();
+	createImageViews();
 }
 
 VulkanSwapchain::~VulkanSwapchain() {
-	for (auto& i : imageViews) {
-		context_.getLogicalDevice().getHandle().destroyImageView(i);
+	for (auto& i : imageViews_) {
+		context_.getLogicalDevice()->destroyImageView(i);
 	}
 	logger.logDebug("Destroyed image views");
-	context_.getLogicalDevice().getHandle().destroySwapchainKHR(swapchainKHR);
+	context_.getLogicalDevice()->destroySwapchainKHR(handle_);
 	logger.logDebug("Destroyed window swapchain");
 }
 
-vk::PresentModeKHR VulkanSwapchain::choosePresentMode() {
-	auto& physicalDevice = context_.getPhysicalDevice().getHandle();
-	auto availableModes = physicalDevice.getSurfacePresentModesKHR(vulkanSurface_.getHandle());
+VulkanSwapchain::operator const vk::SwapchainKHR&() const {
+	return handle_;
+}
+
+const std::vector<vk::ImageView>& VulkanSwapchain::getImageViews() const {
+	return imageViews_;
+}
+
+void VulkanSwapchain::choosePresentMode() {
+	auto& physicalDevice = context_.getPhysicalDevice();
+	auto availableModes = physicalDevice->getSurfacePresentModesKHR(vulkanSurface_);
 
 	// Try for mailbox present mode - triple buffering!
 	for (const auto& i : availableModes) {
 		if (i == vk::PresentModeKHR::eMailbox) {
-			return i;
+			mode_ = i;
+			return;
 		}
 	}
 
 	// Immediate mode has best support
 	for (const auto& i : availableModes) {
 		if (i == vk::PresentModeKHR::eImmediate) {
-			return i;
+			mode_ = i;
+			return;
 		}
 	}
 
 	// FIFO is guaranteed, but not always well supported
-	return vk::PresentModeKHR::eFifo;
+	mode_ = vk::PresentModeKHR::eFifo;
 }
 
 uint32_t VulkanSwapchain::chooseImageCount() {
-	auto& device = context_.getPhysicalDevice().getHandle();
-	vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_.getHandle());
+	auto& device = context_.getPhysicalDevice();
+	vk::SurfaceCapabilitiesKHR capabilities = device->getSurfaceCapabilitiesKHR(vulkanSurface_);
 
 	uint32_t result = capabilities.minImageCount + 1;
 
@@ -81,28 +91,24 @@ uint32_t VulkanSwapchain::chooseImageCount() {
 	return result;
 }
 
-std::vector<vk::ImageView> VulkanSwapchain::createImageViews() {
-	std::vector<vk::ImageView> imageViews;
-
+void VulkanSwapchain::createImageViews() {
 	for (auto& i : images_) {
 		vk::ImageViewCreateInfo createInfo({}, i, vk::ImageViewType::e2D, format_.format,
 			vk::ComponentMapping(),
 			vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-		imageViews.push_back(context_.getLogicalDevice().getHandle().createImageView(createInfo));
+		imageViews_.push_back(context_.getLogicalDevice()->createImageView(createInfo));
 	}
 	logger.logDebug("Created swapchain image views");
-
-	return imageViews;
 }
 
 vk::Extent2D VulkanSwapchain::chooseSwapExtent(const SdlWindow& window) {
-	auto& device = context_.getPhysicalDevice().getHandle();
-	vk::SurfaceCapabilitiesKHR capabilities = device.getSurfaceCapabilitiesKHR(vulkanSurface_.getHandle());
+	auto& device = context_.getPhysicalDevice();
+	vk::SurfaceCapabilitiesKHR capabilities = device->getSurfaceCapabilitiesKHR(vulkanSurface_);
 
 	// Special case if extent is uint32 max
 	if (capabilities.currentExtent.width == std::numeric_limits<uint32_t>::max()) {
 		int width, height;
-		SDL_Vulkan_GetDrawableSize(window.getHandle(), &width, &height);
+		SDL_Vulkan_GetDrawableSize(window, &width, &height);
 
 		vk::Extent2D result{ static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
 		result.width = std::max(result.width, capabilities.minImageExtent.width);
@@ -118,20 +124,22 @@ vk::Extent2D VulkanSwapchain::chooseSwapExtent(const SdlWindow& window) {
 	}
 }
 
-vk::SurfaceFormatKHR VulkanSwapchain::chooseSurfaceFormat() {
-	auto& physicalDevice = context_.getPhysicalDevice().getHandle();
-	auto availableFormats = physicalDevice.getSurfaceFormatsKHR(vulkanSurface_.getHandle());
+void VulkanSwapchain::chooseSurfaceFormat() {
+	auto& physicalDevice = context_.getPhysicalDevice();
+	auto availableFormats = physicalDevice->getSurfaceFormatsKHR(vulkanSurface_);
 
 	// Special return value that means any format is allowed
 	if (availableFormats.size() == 1 && availableFormats[0].format == vk::Format::eUndefined) {
-		return{ vk::Format::eB8G8R8A8Snorm, vk::ColorSpaceKHR::eSrgbNonlinear };
+		format_ = vk::SurfaceFormatKHR{vk::Format::eB8G8R8A8Snorm, vk::ColorSpaceKHR::eSrgbNonlinear};
+		return;
 	}
 
 	for (const auto& i : availableFormats) {
 		if (i.format == vk::Format::eB8G8R8A8Snorm && i.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
-			return i;
+			format_ = i;
+			return;
 		}
 	}
 
-	return availableFormats[0];
+	format_ = availableFormats[0];
 }

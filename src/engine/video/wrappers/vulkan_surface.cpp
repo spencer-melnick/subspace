@@ -2,10 +2,12 @@
 
 #include "../../util/logger.hpp"
 #include "../video_exception.hpp"
+#include "vulkan_instance.hpp"
+#include "sdl_window.hpp"
 
 using namespace subspace;
 
-VulkanSurface::VulkanSurface(const vk::Instance& instance, SDL_Window* window) :
+VulkanSurface::VulkanSurface(const VulkanInstance& instance, const SdlWindow& window) :
     instance_(instance)
 {
     VkSurfaceKHR rawSurface;
@@ -19,9 +21,13 @@ VulkanSurface::VulkanSurface(const vk::Instance& instance, SDL_Window* window) :
 }
 
 VulkanSurface::~VulkanSurface() {
-    instance_.destroySurfaceKHR(handle_);
+    instance_->destroySurfaceKHR(handle_);
 }
 
-const vk::SurfaceKHR& VulkanSurface::getHandle() const {
+VulkanSurface::operator VkSurfaceKHR() const {
+    return static_cast<VkSurfaceKHR>(handle_);
+}
+
+VulkanSurface::operator const vk::SurfaceKHR&() const {
     return handle_;
 }

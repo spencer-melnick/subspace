@@ -14,21 +14,25 @@ namespace subspace {
 			VulkanSwapchain(const RenderContext& context, const SdlWindow& window,
 				const VulkanSurface& vulkanSurface);
 			~VulkanSwapchain();
-			std::vector<vk::ImageView> imageViews;
-			VkSwapchainKHR swapchainKHR;
+
+			operator const vk::SwapchainKHR&() const;
+			const std::vector<vk::ImageView>& getImageViews() const;
 
 		private:
-			const RenderContext& context_;
-			const VulkanSurface& vulkanSurface_;
+			void chooseSurfaceFormat();
+			void choosePresentMode();
+			vk::Extent2D chooseSwapExtent(const SdlWindow& window);
+			uint32_t chooseImageCount();
+			void createImageViews();
+
+			vk::SwapchainKHR handle_;
 			vk::SurfaceFormatKHR format_;
 			vk::PresentModeKHR mode_;
 			std::vector<vk::Image> images_;
+			std::vector<vk::ImageView> imageViews_;
 
-			vk::SurfaceFormatKHR chooseSurfaceFormat();
-			vk::PresentModeKHR choosePresentMode();
-			vk::Extent2D chooseSwapExtent(const SdlWindow& window);
-			uint32_t chooseImageCount();
-			std::vector<vk::ImageView> createImageViews();
+			const RenderContext& context_;
+			const VulkanSurface& vulkanSurface_;
 	};
 }
 

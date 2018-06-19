@@ -11,7 +11,8 @@ namespace subspace {
             VulkanLogicalDevice(const VulkanPhysicalDevice& physicalDevice);
             ~VulkanLogicalDevice();
 
-            const vk::Device& getHandle() const;
+            operator const vk::Device&() const;
+            const vk::Device* operator->() const;
 
         private:
             vk::Device handle_;

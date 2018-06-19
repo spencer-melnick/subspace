@@ -10,6 +10,14 @@ if (MSVC)
     add_compile_options(/W4)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
+
+    # Enable all warnings on GCC
+    # if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    #     add_compile_options(-Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization
+    #     -Wformat=2 -Winit-self -Wlogical-op -Wmissing-include-dirs -Wnoexcept -Wold-style-cast 
+    #     -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel
+    #     -Wstrict-overflow=5 -Wundef -Wno-unused -Wno-variadic-macros -Wno-parentheses)
+    # endif()
 endif()
 
 # Compile commands for VSCode

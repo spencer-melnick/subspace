@@ -17,8 +17,8 @@ Window::Window(const RenderContext& context, const string& name, const Config& c
 
     sdlWindow_ = make_unique<SdlWindow>(name, 0, config.getXResolution(), config.getYResolution(),
         flags);
-    vulkanSurface_ = make_unique<VulkanSurface>(context.getInstance().getHandle(),
-        sdlWindow_->getHandle());
+    vulkanSurface_ = make_unique<VulkanSurface>(context.getInstance(),
+        *sdlWindow_);
     vulkanSwapchain_ = make_unique<VulkanSwapchain>(context, *sdlWindow_, *vulkanSurface_);
 }
 

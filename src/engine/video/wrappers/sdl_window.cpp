@@ -20,7 +20,7 @@ SdlWindow::~SdlWindow() {
     SDL_DestroyWindow(handle_);
 }
 
-SDL_Window* SdlWindow::getHandle() const {
+SdlWindow::operator SDL_Window*() const {
     return handle_;
 }
 

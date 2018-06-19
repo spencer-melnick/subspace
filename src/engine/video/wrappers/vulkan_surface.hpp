@@ -5,15 +5,19 @@
 #include <SDL2/SDL_vulkan.h>
 
 namespace subspace {
+    class SdlWindow;
+    class VulkanInstance;
+
     class VulkanSurface {
         public:
-            VulkanSurface(const vk::Instance& instance, SDL_Window* window);
+            VulkanSurface(const VulkanInstance& instance, const SdlWindow& window);
             ~VulkanSurface();
 
-            const vk::SurfaceKHR& getHandle() const;
+            operator VkSurfaceKHR() const;
+            operator const vk::SurfaceKHR&() const;
 
         private:
-            const vk::Instance& instance_;
+            const VulkanInstance& instance_;
             vk::SurfaceKHR handle_;
     };
 }

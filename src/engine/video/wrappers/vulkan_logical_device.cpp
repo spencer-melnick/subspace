@@ -13,7 +13,7 @@ VulkanLogicalDevice::VulkanLogicalDevice(const VulkanPhysicalDevice& physicalDev
     vk::DeviceCreateInfo deviceInfo({}, 1, &queueInfo, 0, nullptr,
         static_cast<uint32_t>(extensions.size()), extensions.data());
 
-    handle_ = physicalDevice.getHandle().createDevice(deviceInfo);
+    handle_ = physicalDevice->createDevice(deviceInfo);
     logger.logDebug("Created logical device for {}", physicalDevice.getName());
 }
 
@@ -22,6 +22,10 @@ VulkanLogicalDevice::~VulkanLogicalDevice() {
     logger.logDebug("Destroyed logical device");
 }
 
-const vk::Device& VulkanLogicalDevice::getHandle() const {
+VulkanLogicalDevice::operator const vk::Device&() const {
     return handle_;
 }
+
+ const vk::Device* VulkanLogicalDevice::operator->() const {
+     return &handle_;
+ }

@@ -1,6 +1,7 @@
 #include "vulkan_physical_device.hpp"
 
 #include "../../util/logger.hpp"
+#include "vulkan_surface.hpp"
 
 using namespace std;
 using namespace subspace;
@@ -9,7 +10,7 @@ const vector<const char*> VulkanPhysicalDevice::requiredExtensions {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice& handle, const vk::SurfaceKHR& surface) :
+VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice& handle, const VulkanSurface& surface) :
     usable_(true), handle_(handle)
 {
     vk::PhysicalDeviceProperties properties = handle_.getProperties();
@@ -24,12 +25,16 @@ VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice& handle, const vk:
     }
 }
 
-bool VulkanPhysicalDevice::isUsable() const {
-    return usable_;
+VulkanPhysicalDevice::operator const vk::PhysicalDevice&() const {
+    return handle_;
 }
 
-const vk::PhysicalDevice& VulkanPhysicalDevice::getHandle() const {
-    return handle_;
+const vk::PhysicalDevice* VulkanPhysicalDevice::operator->() const {
+    return &handle_;
+}
+
+bool VulkanPhysicalDevice::isUsable() const {
+    return usable_;
 }
 
 unsigned VulkanPhysicalDevice::getUsedQueueFamily() const {
@@ -65,7 +70,7 @@ void VulkanPhysicalDevice::checkExtensions() {
     }
 }
 
-void VulkanPhysicalDevice::chooseQueueFamily(const vk::SurfaceKHR& surface) {
+void VulkanPhysicalDevice::chooseQueueFamily(const VulkanSurface& surface) {
     const auto requriredQueueFlags = vk::QueueFlagBits::eGraphics;
 
     bool foundQueueFamily = false;
