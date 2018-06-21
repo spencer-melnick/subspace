@@ -19,12 +19,12 @@ VulkanSwapchain::VulkanSwapchain(const RenderContext& context, const SdlWindow& 
 {
 	chooseSurfaceFormat();
 	choosePresentMode();
-	auto extent = chooseSwapExtent(window);
+	chooseSwapExtent(window);
 	uint32_t numImages = chooseImageCount();
 
 	vk::SwapchainCreateInfoKHR createInfo(
 	{}, vulkanSurface_, numImages, format_.format,
-		format_.colorSpace, extent, 1, vk::ImageUsageFlagBits::eColorAttachment,
+		format_.colorSpace, extent_, 1, vk::ImageUsageFlagBits::eColorAttachment,
 		vk::SharingMode::eExclusive, 0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
 		vk::CompositeAlphaFlagBitsKHR::eOpaque, mode_, true);
 	logger.logDebug("Created window surface swapchain");
@@ -46,6 +46,14 @@ VulkanSwapchain::~VulkanSwapchain() {
 
 VulkanSwapchain::operator const vk::SwapchainKHR&() const {
 	return handle_;
+}
+
+const vk::SurfaceFormatKHR& VulkanSwapchain::getFormat() const {
+	return format_;
+}
+
+const vk::Extent2D& VulkanSwapchain::getExtent() const {
+	return extent_;
 }
 
 const std::vector<vk::ImageView>& VulkanSwapchain::getImageViews() const {
@@ -101,7 +109,7 @@ void VulkanSwapchain::createImageViews() {
 	logger.logDebug("Created swapchain image views");
 }
 
-vk::Extent2D VulkanSwapchain::chooseSwapExtent(const SdlWindow& window) {
+void VulkanSwapchain::chooseSwapExtent(const SdlWindow& window) {
 	auto& device = context_.getPhysicalDevice();
 	vk::SurfaceCapabilitiesKHR capabilities = device->getSurfaceCapabilitiesKHR(vulkanSurface_);
 
@@ -117,10 +125,10 @@ vk::Extent2D VulkanSwapchain::chooseSwapExtent(const SdlWindow& window) {
 		result.height = std::max(result.height, capabilities.minImageExtent.height);
 		result.height = std::min(result.height, capabilities.maxImageExtent.height);
 
-		return result;
+		extent_ = result;
 	}
 	else {
-		return capabilities.currentExtent;
+		extent_ = capabilities.currentExtent;
 	}
 }
 

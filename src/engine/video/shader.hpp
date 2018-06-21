@@ -6,6 +6,8 @@
 #include "render_context.hpp"
 
 namespace subspace {
+    class VulkanShaderModule;
+
     class Shader {
         public:
             Shader(RenderContext& context, const std::string& vertFilename,
@@ -13,8 +15,6 @@ namespace subspace {
             ~Shader();
 
         private:
-            class Impl;
-
-            std::unique_ptr<Impl> impl_;
-    }
+            std::unique_ptr<VulkanShaderModule> vertShader_, fragShader_;
+    };
 }

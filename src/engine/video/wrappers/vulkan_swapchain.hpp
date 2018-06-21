@@ -16,18 +16,21 @@ namespace subspace {
 			~VulkanSwapchain();
 
 			operator const vk::SwapchainKHR&() const;
+			const vk::SurfaceFormatKHR& getFormat() const;
+			const vk::Extent2D& getExtent() const;
 			const std::vector<vk::ImageView>& getImageViews() const;
 
 		private:
 			void chooseSurfaceFormat();
 			void choosePresentMode();
-			vk::Extent2D chooseSwapExtent(const SdlWindow& window);
+			void chooseSwapExtent(const SdlWindow& window);
 			uint32_t chooseImageCount();
 			void createImageViews();
 
 			vk::SwapchainKHR handle_;
 			vk::SurfaceFormatKHR format_;
 			vk::PresentModeKHR mode_;
+			vk::Extent2D extent_;
 			std::vector<vk::Image> images_;
 			std::vector<vk::ImageView> imageViews_;
 

@@ -5,7 +5,7 @@
 using namespace std;
 using namespace subspace;
 
-string simpleFileRead(const string& filename) {
+string subspace::simpleFileRead(const string& filename) {
     ifstream file(filename, ios::binary | ios::ate);
     auto size = file.tellg();
 

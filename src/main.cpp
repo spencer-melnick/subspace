@@ -20,6 +20,8 @@ int main() {
         RenderContext context;
         Window window(context, "Subspace Engine", config);
 
+        Shader testShader(context, "rc/shaders/test/vert.spv", "rc/shaders/test/frag.spv");
+
         this_thread::sleep_for(5s);
     } catch (const exception& e) {
         logger.logError(e.what());
