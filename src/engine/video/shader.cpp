@@ -11,3 +11,11 @@ Shader::Shader(RenderContext& context, const string& vertFilename, const string&
 {}
 
 Shader::~Shader() = default;
+
+const VulkanShaderModule& Shader::getVertShader() const {
+    return *vertShader_;
+}
+
+const VulkanShaderModule& Shader::getFragShader() const {
+    return *fragShader_;
+}

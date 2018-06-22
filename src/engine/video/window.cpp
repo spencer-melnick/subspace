@@ -8,7 +8,9 @@
 using namespace std;
 using namespace subspace;
 
-Window::Window(const RenderContext& context, const string& name, const Config& config) {
+Window::Window(const RenderContext& context, const string& name, const Config& config) :
+    context_(context)
+{
     uint32_t flags = SDL_WINDOW_VULKAN;
 
     if (config.isFullscreen()) {
@@ -23,3 +25,11 @@ Window::Window(const RenderContext& context, const string& name, const Config& c
 }
 
 Window::~Window() = default;
+
+const RenderContext& Window::getContext() const {
+    return context_;
+}
+
+const VulkanSwapchain& Window::getSwapchain() const {
+    return *vulkanSwapchain_;
+}

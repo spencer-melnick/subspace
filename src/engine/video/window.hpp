@@ -29,9 +29,14 @@ namespace subspace {
             Window(const RenderContext& context, const std::string& name, const Config& config);
             ~Window();
 
+            const RenderContext& getContext() const;
+            const VulkanSwapchain& getSwapchain() const;
+
         private:
             std::unique_ptr<SdlWindow> sdlWindow_;
             std::unique_ptr<VulkanSurface> vulkanSurface_;
             std::unique_ptr<VulkanSwapchain> vulkanSwapchain_;
+
+            const RenderContext& context_;
     };
 }

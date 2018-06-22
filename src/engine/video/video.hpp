@@ -10,6 +10,7 @@
 
 #include "video_exception.hpp"
 #include "render_context.hpp"
+#include "renderer.hpp"
 #include "shader.hpp"
 #include "window.hpp"
 

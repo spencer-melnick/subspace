@@ -51,6 +51,7 @@ set(SOURCES
     "src/engine/video/wrappers/vulkan_surface.cpp"
     "src/engine/video/wrappers/vulkan_swapchain.cpp"
     "src/engine/video/render_context.cpp"
+    "src/engine/video/renderer.cpp"
     "src/engine/video/shader.cpp"
     "src/engine/video/video_exception.cpp"
     "src/engine/video/video.cpp"

@@ -14,6 +14,9 @@ namespace subspace {
                 const std::string& fragFilename);
             ~Shader();
 
+            const VulkanShaderModule& getVertShader() const;
+            const VulkanShaderModule& getFragShader() const;
+
         private:
             std::unique_ptr<VulkanShaderModule> vertShader_, fragShader_;
     };
