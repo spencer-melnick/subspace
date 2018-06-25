@@ -48,6 +48,7 @@ VulkanPipeline::VulkanPipeline(const VulkanLogicalDevice& device, const VulkanSw
         &multisampleInfo, nullptr, &colorBlend, nullptr, layout_, renderPass_, 0, vk::Pipeline(),
         -1);
 
+    handle_ = device_->createGraphicsPipeline({}, createInfo);
     logger.logDebug("Created rendering pipeline");
 }
 
@@ -58,4 +59,8 @@ VulkanPipeline::~VulkanPipeline() {
 
 VulkanPipeline::operator const vk::Pipeline&() const{
     return handle_;
+}
+
+const VulkanRenderPass& VulkanPipeline::getRenderPass() const {
+    return renderPass_;
 }

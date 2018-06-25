@@ -16,8 +16,12 @@ VulkanRenderPass::VulkanRenderPass(const VulkanLogicalDevice& device, const Vulk
         
     vk::AttachmentReference colorAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal);
     vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, 1, &colorAttachmentRef);
+    vk::SubpassDependency dependency(VK_SUBPASS_EXTERNAL, 0,
+        vk::PipelineStageFlagBits::eColorAttachmentOutput,
+        vk::PipelineStageFlagBits::eColorAttachmentOutput,
+        {}, vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite);
 
-    vk::RenderPassCreateInfo createInfo({}, 1, &colorAttachment, 1, &subpass);
+    vk::RenderPassCreateInfo createInfo({}, 1, &colorAttachment, 1, &subpass, 1, &dependency);
     handle_ = device_->createRenderPass(createInfo);
     logger.logDebug("Created render pass");
 }

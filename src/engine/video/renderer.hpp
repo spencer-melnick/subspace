@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <memory>
 
 #include "render_context.hpp"
@@ -8,6 +9,8 @@
 
 namespace subspace {
     class VulkanPipeline;
+    class VulkanFramebuffers;
+    class VulkanPrimaryCommandBuffers;
 
     class Renderer {
         public:
@@ -15,10 +18,16 @@ namespace subspace {
             ~Renderer();
 
         private:
+            static const unsigned maxSynchronousFrames_;
+
             const RenderContext& context_;
             const Window& window_;
             const Shader& shader_;
 
+            unsigned currentFrame_ = 0;
+
             std::unique_ptr<VulkanPipeline> pipeline_;
+            std::unique_ptr<VulkanFramebuffers> framebuffers_;
+            std::unique_ptr<VulkanPrimaryCommandBuffers> primaryCommands_;
     };
 }

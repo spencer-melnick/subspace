@@ -17,6 +17,7 @@ namespace subspace {
             ~VulkanPipeline();
 
             operator const vk::Pipeline&() const;
+            const VulkanRenderPass& getRenderPass() const;
 
         private:
             vk::Pipeline handle_;
