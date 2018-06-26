@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <functional>
 
-// Project includes
+// Project includes 
 #include "sdl_window.hpp"
 
 using namespace std;

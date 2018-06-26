@@ -1,5 +1,9 @@
 #pragma once
 
+
+/**
+ * Render interface
+ */
 namespace subspace {
     class IRenderer {
         public:

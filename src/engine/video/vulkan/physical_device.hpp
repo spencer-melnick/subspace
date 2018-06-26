@@ -10,7 +10,7 @@ namespace subspace {
         public:        
             PhysicalDevice(vk::PhysicalDevice& handle, const vk::SurfaceKHR& surface);
 
-            // Cast to underlying type
+            // Cast to wrapped type
             operator const vk::PhysicalDevice&() const;
             const vk::PhysicalDevice* operator->() const;
 

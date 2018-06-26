@@ -3,7 +3,7 @@
 // STL includes
 #include <exception>
 
-// Project includes
+// Project includes 
 #include "engine/util/logger.hpp"
 
 using namespace std;

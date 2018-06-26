@@ -3,7 +3,7 @@
 // STL includes
 #include <vector>
 
-// Library includes
+// Library includes 
 #include <vulkan/vulkan.hpp>
 
 namespace subspace {

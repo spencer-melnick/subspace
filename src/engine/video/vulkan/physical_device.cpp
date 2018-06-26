@@ -78,8 +78,7 @@ void PhysicalDevice::chooseQueueFamily(const vk::SurfaceKHR& surface) {
         auto family = queueFamilyProperties[i];
 
         bool flagSupport = (family.queueFlags & requriredQueueFlags) == requriredQueueFlags;
-        bool presentSupport = handle_.getSurfaceSupportKHR(i, 
-        surface);
+        bool presentSupport = handle_.getSurfaceSupportKHR(i, surface);
 
         if (family.queueCount > 0 && flagSupport && presentSupport) {
             usedQueueFamily_ = i;

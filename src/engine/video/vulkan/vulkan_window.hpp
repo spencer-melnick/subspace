@@ -3,7 +3,7 @@
 // Library includes
 #include <vulkan/vulkan.hpp>
 
-// Project includes
+// Project includes 
 #include "../window.hpp"
 #include "sdl_window.hpp"
 

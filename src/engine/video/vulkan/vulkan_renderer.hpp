@@ -7,7 +7,7 @@
 // Library includes
 #include <vulkan/vulkan.hpp>
 
-// Project includes
+// Project includes 
 #include "context.hpp"
 
 namespace subspace {

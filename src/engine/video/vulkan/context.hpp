@@ -6,7 +6,7 @@
 // Library includes
 #include <vulkan/vulkan.hpp>
 
-// Project includes
+// Project includes 
 #include "physical_device.hpp"
 
 namespace subspace {

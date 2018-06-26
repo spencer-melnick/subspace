@@ -9,7 +9,7 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-// Project includes
+// Project includes 
 #include "engine/util/config.hpp"
 
 namespace subspace {
