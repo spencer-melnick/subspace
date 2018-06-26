@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "engine/subspace.hpp"
+#include "engine/video/vulkan/vulkan_renderer.hpp"
 
 using namespace std;
 using namespace subspace;
@@ -13,22 +14,12 @@ int main() {
 
     try {
         logger.logInfo("Starting Subspace Engine...");
-        initializeVideo();
-
         Config config {"rc/config.json"};
 
-        RenderContext context;
-        Window window(context, "Subspace Engine", config);
-
-        Shader testShader(context, "rc/shaders/test/vert.spv", "rc/shaders/test/frag.spv");
-        Renderer renderer(window, testShader);
-
-        this_thread::sleep_for(5s);
+        VulkanRenderer renderer;
     } catch (const exception& e) {
         logger.logError(e.what());
     }
-
-    terminateVideo();
 
     return 0;
 }
