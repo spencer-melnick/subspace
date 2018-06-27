@@ -15,7 +15,11 @@ namespace subspace {
         public:
             VulkanRenderer() = default;
 
+            // Getters
+            const Context& getContext() const;
+
         private:
+            // Member variables
             Context context_;
     };
 }

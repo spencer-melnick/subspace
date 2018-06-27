@@ -43,6 +43,8 @@ set(SOURCES
     "src/engine/video/vulkan/context.cpp"
     "src/engine/video/vulkan/physical_device.cpp"
     "src/engine/video/vulkan/sdl_window.cpp"
+    "src/engine/video/vulkan/swapchain.cpp"
+    "src/engine/video/vulkan/vulkan_renderer.cpp"
     "src/engine/video/vulkan/vulkan_window.cpp"
 )
 include_directories("src")

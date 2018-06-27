@@ -32,7 +32,7 @@ namespace subspace {
             // Member variables
             vk::PhysicalDevice handle_;
             bool usable_ = true;
-            unsigned usedQueueFamily_, rating_;
+            unsigned usedQueueFamily_, rating_ = 0;
             std::string name_;
     };
 }

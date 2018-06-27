@@ -15,9 +15,11 @@ namespace subspace {
             Context();
 
             // Getters
-            const vk::UniqueInstance& getInstance() const;
-            const vk::PhysicalDevice& getPhysicalDevice() const;
-            const vk::UniqueDevice& getLogicalDevice() const;
+            const vk::Instance& getInstance() const;
+            const std::vector<PhysicalDevice>& listPhysicalDevices() const;
+            const PhysicalDevice& getChosenPhysicalDevice() const;
+            const vk::Device& getLogicalDevice() const;
+            const vk::Queue& getMainQueue() const;
 
         private:
             // Initialization helpers
@@ -29,5 +31,6 @@ namespace subspace {
             std::vector<PhysicalDevice> physicalDevices_;
             PhysicalDevice* chosenDevice_ = nullptr;
             vk::UniqueDevice logicalDevice_;
+            vk::Queue mainQueue_;
     };
 }

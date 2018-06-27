@@ -4,6 +4,7 @@
 
 #include "engine/subspace.hpp"
 #include "engine/video/vulkan/vulkan_renderer.hpp"
+#include "engine/video/vulkan/vulkan_window.hpp"
 
 using namespace std;
 using namespace subspace;
@@ -17,6 +18,7 @@ int main() {
         Config config {"rc/config.json"};
 
         VulkanRenderer renderer;
+        VulkanWindow window(renderer, "Subspace", config);
     } catch (const exception& e) {
         logger.logError(e.what());
     }
