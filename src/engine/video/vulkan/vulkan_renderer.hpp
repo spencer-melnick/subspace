@@ -19,6 +19,8 @@ namespace subspace {
             const Context& getContext() const;
 
         private:
+            // Initialization helpers
+
             // Member variables
             Context context_;
     };

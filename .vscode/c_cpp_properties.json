@@ -40,7 +40,8 @@
                 "/usr/include",
                 "${workspaceFolder}",
                 "${workspaceFolder}/build",
-                "${workspaceFolder}/lib/json/include"
+                "${workspaceFolder}/lib/json/include",
+                "${workspaceFolder}/src"
             ],
             "defines": [],
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",

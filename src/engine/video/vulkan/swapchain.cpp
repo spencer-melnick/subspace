@@ -13,18 +13,19 @@
 using namespace std;
 using namespace subspace;
 
-Swapchain::Swapchain(const Context& context, const SdlWindow& window, const vk::SurfaceKHR& surface) :
-	context_(context), vulkanSurface_(surface)
+Swapchain::Swapchain(const Context& context, const SdlWindow& window,
+	const vk::SurfaceKHR& surface, const vk::CommandPool& commandPool) :
+		context_(context), vulkanSurface_(surface)
 {
-	chooseSurfaceFormat();
 	choosePresentMode();
 	chooseSwapExtent(window);
 	uint32_t numImages = chooseImageCount();
 
 	vk::SwapchainCreateInfoKHR createInfo(
-	{}, vulkanSurface_, numImages, format_.format,
-		format_.colorSpace, extent_, 1, vk::ImageUsageFlagBits::eColorAttachment,
-		vk::SharingMode::eExclusive, 0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
+	{}, vulkanSurface_, numImages, context_.getPresentFormat().format,
+		context_.getPresentFormat().colorSpace, extent_, 1,
+		vk::ImageUsageFlagBits::eColorAttachment, vk::SharingMode::eExclusive,
+		0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
 		vk::CompositeAlphaFlagBitsKHR::eOpaque, mode_, true);
 
 	handle_ = context_.getLogicalDevice().createSwapchainKHRUnique(createInfo);
@@ -32,17 +33,13 @@ Swapchain::Swapchain(const Context& context, const SdlWindow& window, const vk::
 	images_.resize(numImages);
 	createImageViews();
 	createRenderPass();
-	createFramebuffers();
+	createFrames(commandPool);
 
 	logger.logVerbose("Created swapchain");
 }
 
 Swapchain::operator const vk::SwapchainKHR&() const {
 	return *handle_;
-}
-
-const vk::SurfaceFormatKHR& Swapchain::getFormat() const {
-	return format_;
 }
 
 const vk::Extent2D& Swapchain::getExtent() const {
@@ -94,8 +91,8 @@ uint32_t Swapchain::chooseImageCount() {
 
 void Swapchain::createImageViews() {
 	for (auto& i : images_) {
-		vk::ImageViewCreateInfo createInfo({}, i, vk::ImageViewType::e2D, format_.format,
-			vk::ComponentMapping(),
+		vk::ImageViewCreateInfo createInfo({}, i, vk::ImageViewType::e2D,
+			context_.getPresentFormat().format, vk::ComponentMapping(),
 			vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
 		imageViews_.push_back(move(context_.getLogicalDevice().createImageViewUnique(createInfo)));
 	}
@@ -124,30 +121,8 @@ void Swapchain::chooseSwapExtent(const SdlWindow& window) {
 	}
 }
 
-void Swapchain::chooseSurfaceFormat() {
-	auto& physicalDevice = context_.getChosenPhysicalDevice();
-	auto availableFormats = physicalDevice->getSurfaceFormatsKHR(vulkanSurface_);
-
-	// Special return value that means any format is allowed
-	if (availableFormats.size() == 1 && availableFormats[0].format == vk::Format::eUndefined) {
-		format_ = vk::SurfaceFormatKHR{vk::Format::eB8G8R8A8Snorm, vk::ColorSpaceKHR::eSrgbNonlinear};
-		return;
-	}
-
-	for (const auto& i : availableFormats) {
-		if (i.format == vk::Format::eB8G8R8A8Snorm &&
-			i.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
-		{
-			format_ = i;
-			return;
-		}
-	}
-
-	format_ = availableFormats[0];
-}
-
 void Swapchain::createRenderPass() {
-	vk::AttachmentDescription colorAttachment({}, format_.format,
+	vk::AttachmentDescription colorAttachment({}, context_.getPresentFormat().format,
         vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eStore,
         vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare,
         vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
@@ -163,13 +138,23 @@ void Swapchain::createRenderPass() {
     renderPass_ = context_.getLogicalDevice().createRenderPassUnique(createInfo);
 }
 
-void Swapchain::createFramebuffers() {
+void Swapchain::createFrames(const vk::CommandPool& commandPool) {
 	for (auto& i : imageViews_) {
-		auto framebuffer = context_.getLogicalDevice().createFramebufferUnique({
+		auto& device = context_.getLogicalDevice();
+
+		Frame frame;
+		frame.framebuffer = device.createFramebufferUnique({
 			{}, *renderPass_, 1, &(*i),
 			extent_.width, extent_.height, 0
 		});
 
-		framebuffers_.push_back(move(framebuffer));
+		frame.available = device.createSemaphoreUnique({});
+		frame.drawn = device.createSemaphoreUnique({});
+		frame.fence = device.createFenceUnique({vk::FenceCreateFlagBits::eSignaled});
+		frame.presentBuffer = move(device.allocateCommandBuffersUnique({
+			commandPool, vk::CommandBufferLevel::ePrimary, 1
+		})[0]);
+
+		frames_.push_back(move(frame));
 	}
 }

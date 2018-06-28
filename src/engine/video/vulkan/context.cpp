@@ -27,8 +27,9 @@ Context::Context() {
     {
         vk::UniqueSurfaceKHR tempSurface {tempWindow.createSurface(*instance_), {*instance_}};
         enumerateDevices(*tempSurface);
+        chosenDevice_ = &(*physicalDevices_.begin());
+        choosePresentFormat(*tempSurface);
     }
-    chosenDevice_ = &(*physicalDevices_.begin());
 
     createLogicalDevice();
     mainQueue_ = logicalDevice_->getQueue(chosenDevice_->getUsedQueueFamily(), 0);
@@ -45,6 +46,10 @@ const vector<PhysicalDevice>& Context::listPhysicalDevices() const {
 
 const PhysicalDevice& Context::getChosenPhysicalDevice() const {
     return *chosenDevice_;
+}
+
+const vk::SurfaceFormatKHR& Context::getPresentFormat() const {
+    return presentFormat_;
 }
 
 const vk::Device& Context::getLogicalDevice() const {
@@ -71,6 +76,27 @@ void Context::enumerateDevices(const vk::SurfaceKHR& surface) {
             return a.getRating() > b.getRating();
         }
     );
+}
+
+void Context::choosePresentFormat(const vk::SurfaceKHR& surface) {
+    auto availableFormats = (*chosenDevice_)->getSurfaceFormatsKHR(surface);
+
+	// Special return value that means any format is allowed
+	if (availableFormats.size() == 1 && availableFormats[0].format == vk::Format::eUndefined) {
+		presentFormat_ = vk::SurfaceFormatKHR{vk::Format::eB8G8R8A8Snorm, vk::ColorSpaceKHR::eSrgbNonlinear};
+		return;
+	}
+
+	for (const auto& i : availableFormats) {
+		if (i.format == vk::Format::eB8G8R8A8Snorm &&
+			i.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
+		{
+			presentFormat_ = i;
+			return;
+		}
+	}
+
+	presentFormat_ = availableFormats[0];
 }
 
 void Context::createLogicalDevice() {
