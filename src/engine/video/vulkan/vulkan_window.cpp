@@ -56,7 +56,7 @@ void VulkanWindow::swap() {
 
             // Set dynamic viewport and scissor
             frame.presentBuffer->setViewport(0, {vk::Viewport{0.0f, 0.0f,
-                extent.width, extent.height}});
+                static_cast<float>(extent.width), static_cast<float>(extent.height)}});
             frame.presentBuffer->setScissor(0, {vk::Rect2D{{}, extent}});
             
             // Actual draw commands would go here

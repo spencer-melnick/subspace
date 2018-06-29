@@ -23,7 +23,18 @@ namespace subspace {
             const vk::Queue& getMainQueue() const;
 
         private:
+            // Callback functions
+            static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT flags,
+                VkDebugReportObjectTypeEXT  objectType,
+                uint64_t object,
+                size_t location,
+                int32_t messageCode,
+                const char* pLayerPrefix,
+                const char* pMessage,
+                void* pUserData);
+
             // Initialization helpers
+            void setupDebugLayers();
             void enumerateDevices(const vk::SurfaceKHR& surface);
             void choosePresentFormat(const vk::SurfaceKHR& surface);
             void createLogicalDevice();
@@ -35,5 +46,10 @@ namespace subspace {
             vk::SurfaceFormatKHR presentFormat_;
             vk::UniqueDevice logicalDevice_;
             vk::Queue mainQueue_;
+
+            // Debug variables
+            #ifndef NDEBUG
+                vk::UniqueDebugReportCallbackEXT debugCallback_;
+            #endif
     };
 }
