@@ -15,23 +15,15 @@ namespace subspace {
 	class Swapchain {
 		public:
 			Swapchain(const Context& context, const SdlWindow& window,
-				const vk::SurfaceKHR& vulkanSurface, const vk::CommandPool& commandPool);
+				const vk::SurfaceKHR& vulkanSurface, const vk::RenderPass& renderPass);
 
 			// Cast to wrapped type
 			operator const vk::SwapchainKHR&() const;
 
-			// Nested types
-			struct Frame {
-				vk::UniqueFramebuffer framebuffer;
-				vk::UniqueSemaphore available, drawn;
-				vk::UniqueFence fence;
-				vk::UniqueCommandBuffer presentBuffer;
-			};
-
 			// Getters
 			const vk::Extent2D& getExtent() const;
 			const std::vector<vk::UniqueImageView>& getImageViews() const;
-			const Frame& getCurrentFrame() const;
+			const vk::Framebuffer& getFramebuffer(unsigned index) const;
 
 		private:
 			// Initialization helpers
@@ -39,8 +31,7 @@ namespace subspace {
 			void chooseSwapExtent(const SdlWindow& window);
 			uint32_t chooseImageCount();
 			void createImageViews();
-			void createRenderPass();
-			void createFrames(const vk::CommandPool& commandPool);
+			void createFramebuffers(const vk::RenderPass& renderPass);
 
 			// Member variables
 			vk::UniqueSwapchainKHR handle_;
@@ -48,8 +39,7 @@ namespace subspace {
 			vk::Extent2D extent_;
 			std::vector<vk::Image> images_;
 			std::vector<vk::UniqueImageView> imageViews_;
-			vk::UniqueRenderPass renderPass_;
-			std::vector<Frame> frames_;
+			std::vector<vk::UniqueFramebuffer> framebuffers_;
 
 			// References to object dependencies
 			const Context& context_;

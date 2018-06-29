@@ -19,6 +19,10 @@ int main() {
 
         VulkanRenderer renderer;
         VulkanWindow window(renderer, "Subspace", config);
+
+        while (true) {
+            window.swap();
+        }
     } catch (const exception& e) {
         logger.logError(e.what());
     }

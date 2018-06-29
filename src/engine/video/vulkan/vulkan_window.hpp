@@ -1,5 +1,8 @@
 #pragma once
 
+// STL includes
+#include <vector>
+
 // Library includes
 #include <vulkan/vulkan.hpp>
 
@@ -16,11 +19,32 @@ namespace subspace {
             VulkanWindow(const VulkanRenderer& renderer, const std::string& name,
                 const Config& config);
 
+            // Nested types
+			struct Frame {
+				vk::UniqueSemaphore available, drawn;
+				vk::UniqueFence fence;
+				vk::UniqueCommandBuffer presentBuffer;
+			};
+
+            // Interface functions
             virtual void swap() override;
 
+            // Constants
+            static const unsigned maxFramesInFlight = 2;
+
         private:
+            // Initialization helpers
+            void createFrames(const vk::Device& device);
+
+            // Owner reference
+            const VulkanRenderer& renderer_;
+
+            // Member variables
             SdlWindow window_;
             vk::UniqueSurfaceKHR surface_;
+            vk::UniqueCommandPool commandPool_;
+            std::vector<Frame> frames_;
+            unsigned currentFrame_ = 0;
             Swapchain swapchain_;
     };
 }
