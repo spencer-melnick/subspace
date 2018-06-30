@@ -50,7 +50,7 @@ void VulkanRenderer::createRenderPass() {
     vk::SubpassDependency dependency(VK_SUBPASS_EXTERNAL, 0,
         vk::PipelineStageFlagBits::eColorAttachmentOutput,
         vk::PipelineStageFlagBits::eColorAttachmentOutput,
-        vk::AccessFlagBits::eColorAttachmentRead,
+        {},
         vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite);
 
     vk::RenderPassCreateInfo createInfo({}, 1, &colorAttachment, 1, &subpass, 1, &dependency);
@@ -94,15 +94,17 @@ void VulkanRenderer::createPipeline() {
 
     // Polygon fill, cull counter clockwise faces
     vk::PipelineRasterizationStateCreateInfo rasterizerInfo({}, 0, 0, vk::PolygonMode::eFill,
-        vk::CullModeFlagBits::eBack, vk::FrontFace::eClockwise, 0, 0, 0, 0, 1.0f);
+        vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise, 0, 0, 0, 0, 1.0f);
     
     // Only using 1 sample per pixel
     vk::PipelineMultisampleStateCreateInfo multisampleInfo({}, vk::SampleCountFlagBits::e1, 0,
         1.0f, nullptr, 0, 0);
 
     vk::PipelineColorBlendAttachmentState colorBlendAttachment(1, vk::BlendFactor::eSrcAlpha,
-        vk::BlendFactor::eOneMinusDstAlpha, vk::BlendOp::eAdd, vk::BlendFactor::eOne,
-        vk::BlendFactor::eZero, vk::BlendOp::eAdd);
+        vk::BlendFactor::eOneMinusSrcAlpha, vk::BlendOp::eAdd, vk::BlendFactor::eOne,
+        vk::BlendFactor::eOneMinusSrcAlpha, vk::BlendOp::eAdd,
+        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG |
+            vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA);
 
     vk::PipelineColorBlendStateCreateInfo colorBlend({}, 0, vk::LogicOp::eCopy, 1,
         &colorBlendAttachment);

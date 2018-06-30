@@ -64,9 +64,12 @@ void VulkanWindow::swap() {
     // Reset command buffer and record commands
     frame.presentBuffer->reset({});
     frame.presentBuffer->begin({vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
+    
         vk::ClearValue clearValue{{array<float, 4>{0.2f, 0.2f, 0.2f, 1.0f}}};
+
         frame.presentBuffer->beginRenderPass({renderer_.getRenderPass(), framebuffer,
             {{}, extent}, 1, &clearValue}, vk::SubpassContents::eInline);
+
             frame.presentBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics,
                 renderer_.getPipeline());
 
