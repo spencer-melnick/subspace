@@ -3,6 +3,8 @@
 #include <thread>
 
 #include "engine/subspace.hpp"
+#include "engine/video/vulkan/vulkan_renderer.hpp"
+#include "engine/video/vulkan/vulkan_window.hpp"
 
 using namespace std;
 using namespace subspace;
@@ -11,24 +13,41 @@ int main() {
     fstream logFile("log.txt", ios::out | ios::trunc);
     logger.setOutput(logFile);
 
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+
     try {
         logger.logInfo("Starting Subspace Engine...");
-        initializeVideo();
-
         Config config {"rc/config.json"};
 
-        RenderContext context;
-        Window window(context, "Subspace Engine", config);
+        VulkanRenderer renderer;
+        VulkanWindow window(renderer, "Subspace", config);
 
-        Shader testShader(context, "rc/shaders/test/vert.spv", "rc/shaders/test/frag.spv");
-        Renderer renderer(window, testShader);
+        bool running = true;
+        SDL_Event event;
 
-        this_thread::sleep_for(5s);
+        while (running) {
+            // TODO: Add event handling system
+            while (SDL_PollEvent(&event)) {
+                switch(event.type) {
+                    case SDL_KEYDOWN:
+                        switch(event.key.keysym.sym) {
+                            case SDLK_ESCAPE:
+                                running = false;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            window.swap();
+        }
     } catch (const exception& e) {
         logger.logError(e.what());
     }
-
-    terminateVideo();
 
     return 0;
 }
