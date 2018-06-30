@@ -32,5 +32,9 @@ namespace subspace {
         return "";
     }
 
-    Logger logger(Logger::Level::Verbose);
+    #ifdef NDEBUG
+        Logger logger(Logger::Level::Info);
+    #elif
+        Logger logger(Logger::Level::Verbose);
+    #endif
 }
