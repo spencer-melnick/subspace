@@ -24,7 +24,8 @@ Context::Context() {
     #endif
 
     // Create Vulkan instance
-    vk::ApplicationInfo appInfo {"subspace", 1, nullptr, 0, VK_API_VERSION_1_0};
+    vk::ApplicationInfo appInfo {"subspace", 1, nullptr, 0,
+        VK_MAKE_VERSION(1, 0, VK_HEADER_VERSION)};
     instance_ = vk::createInstanceUnique(vk::InstanceCreateInfo{
         {}, &appInfo,
         static_cast<uint32_t>(instanceLayers.size()), instanceLayers.data(),
@@ -98,7 +99,11 @@ void Context::setupDebugLayers() {
         pfn_vkDestroyDebugReportCallbackEXT =
             reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>
                 (vkGetInstanceProcAddr(*instance_, "vkDestroyDebugReportCallbackEXT"));
-        debugCallback_ = move(instance_->createDebugReportCallbackEXTUnique({{}, debugReportCallback}));
+
+        debugCallback_ = move(instance_->createDebugReportCallbackEXTUnique({
+            {vk::DebugReportFlagBitsEXT::eError | vk::DebugReportFlagBitsEXT::eWarning |
+                vk::DebugReportFlagBitsEXT::ePerformanceWarning},
+            debugReportCallback}));
     #endif
 }
 

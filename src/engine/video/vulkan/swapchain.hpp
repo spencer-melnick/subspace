@@ -15,7 +15,12 @@ namespace subspace {
 	class Swapchain {
 		public:
 			Swapchain(const Context& context, const SdlWindow& window,
-				const vk::SurfaceKHR& vulkanSurface, const vk::RenderPass& renderPass);
+				const vk::SurfaceKHR& vulkanSurface, const vk::RenderPass& renderPass,
+				vk::SwapchainKHR oldSwapchain = vk::SwapchainKHR(nullptr));
+			~Swapchain();
+
+			// Move assignment
+			Swapchain& operator=(Swapchain&& other);
 
 			// Cast to wrapped type
 			operator const vk::SwapchainKHR&() const;

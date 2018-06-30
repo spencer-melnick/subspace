@@ -15,6 +15,7 @@ namespace subspace {
     class VulkanRenderer: public IRenderer {
         public:
             VulkanRenderer();
+            ~VulkanRenderer();
 
             // Interface functions
             virtual void draw() override;

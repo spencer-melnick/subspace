@@ -16,6 +16,12 @@ VulkanRenderer::VulkanRenderer() {
     logger.logVerbose("Created Vulkan renderer");
 }
 
+VulkanRenderer::~VulkanRenderer() {
+    // Wait until device is idle before dumping all of our resources
+    context_.getLogicalDevice().waitIdle();
+    logger.logVerbose("Destroyed Vulkan renderer");
+}
+
 void VulkanRenderer::draw() {
     // Generate secondary command buffers!
 }
@@ -39,11 +45,13 @@ void VulkanRenderer::createRenderPass() {
         vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
         
     vk::AttachmentReference colorAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal);
-    vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, 1, &colorAttachmentRef);
+    vk::SubpassDescription subpass({}, vk::PipelineBindPoint::eGraphics, 0, nullptr,
+        1, &colorAttachmentRef);
     vk::SubpassDependency dependency(VK_SUBPASS_EXTERNAL, 0,
         vk::PipelineStageFlagBits::eColorAttachmentOutput,
         vk::PipelineStageFlagBits::eColorAttachmentOutput,
-        {}, vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite);
+        vk::AccessFlagBits::eColorAttachmentRead,
+        vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite);
 
     vk::RenderPassCreateInfo createInfo({}, 1, &colorAttachment, 1, &subpass, 1, &dependency);
     renderPass_ = context_.getLogicalDevice().createRenderPassUnique(createInfo);
@@ -80,8 +88,9 @@ void VulkanRenderer::createPipeline() {
     shaderStages.push_back(vk::PipelineShaderStageCreateInfo({},
         vk::ShaderStageFlagBits::eFragment, *fragmentShader, "main"));
 
-    // No viewports created since we're specifying them dynamically
-    vk::PipelineViewportStateCreateInfo viewportInfo{};
+    vk::Viewport viewport{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+    vk::Rect2D scissor;
+    vk::PipelineViewportStateCreateInfo viewportInfo{{}, 1, &viewport, 1, &scissor};
 
     // Polygon fill, cull counter clockwise faces
     vk::PipelineRasterizationStateCreateInfo rasterizerInfo({}, 0, 0, vk::PolygonMode::eFill,

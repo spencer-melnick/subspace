@@ -14,7 +14,7 @@ using namespace subspace;
 VulkanWindow::VulkanWindow(const VulkanRenderer& renderer, const std::string& name,
     const Config& config) :
         renderer_(renderer),
-        window_(name, 0, config.getXResolution(), config.getYResolution(), SDL_WINDOW_VULKAN),
+        window_(name, 0, config.getXResolution(), config.getYResolution(), SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE),
         surface_(window_.createSurface(renderer.getContext().getInstance()), {
             renderer.getContext().getInstance()
         }),
@@ -29,26 +29,42 @@ VulkanWindow::VulkanWindow(const VulkanRenderer& renderer, const std::string& na
     logger.logVerbose("Created window");
 }
 
-void VulkanWindow::swap() {
-    // TODO: Add check for out of date swapchain
+VulkanWindow::~VulkanWindow() {
+    // Wait until device is idle before dumping resources
+    renderer_.getContext().getLogicalDevice().waitIdle();
+    logger.logVerbose("Destroyed Vulkan window");
+}
 
+void VulkanWindow::swap() {
     auto& device = renderer_.getContext().getLogicalDevice();
     auto& frame = frames_[currentFrame_];
     auto& extent = swapchain_.getExtent();
 
-    // Wait until command buffer is free
-    device.waitForFences(1, &(*frame.fence), true, numeric_limits<uint32_t>::max());
-    device.resetFences(1, &(*frame.fence));
-
     // Get next framebuffer from swapchain
-    auto result = device.acquireNextImageKHR(swapchain_, numeric_limits<uint32_t>::max(),
-        *(frame.available), vk::Fence());
-    auto& framebuffer = swapchain_.getFramebuffer(result.value);
+    unsigned frameIndex;
+    auto result = device.acquireNextImageKHR(swapchain_, numeric_limits<uint64_t>::max(),
+        *(frame.available), vk::Fence(nullptr), &frameIndex);
+
+    if (result == vk::Result::eSuboptimalKHR || result == vk::Result::eErrorOutOfDateKHR) {
+        recreateSwapchain();
+        return;
+    } else if (result == vk::Result::eNotReady) {
+        logger.logWarning("Swapchain image not ready");
+        return;
+    } else if (result != vk::Result::eSuccess) {
+        throw runtime_error("Failed to acquire image from swapchain");
+    }
+
+    auto& framebuffer = swapchain_.getFramebuffer(frameIndex);
+
+    // Wait until command buffer is free
+    device.waitForFences(1, &(*frame.fence), true, numeric_limits<uint64_t>::max());
+    device.resetFences(1, &(*frame.fence));
 
     // Reset command buffer and record commands
     frame.presentBuffer->reset({});
     frame.presentBuffer->begin({vk::CommandBufferUsageFlagBits::eOneTimeSubmit});
-        vk::ClearValue clearValue{{array<float, 4>{255.0f, 0.0f, 0.0f, 1.0f}}};
+        vk::ClearValue clearValue{{array<float, 4>{0.2f, 0.2f, 0.2f, 1.0f}}};
         frame.presentBuffer->beginRenderPass({renderer_.getRenderPass(), framebuffer,
             {{}, extent}, 1, &clearValue}, vk::SubpassContents::eInline);
             frame.presentBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics,
@@ -56,7 +72,8 @@ void VulkanWindow::swap() {
 
             // Set dynamic viewport and scissor
             frame.presentBuffer->setViewport(0, {vk::Viewport{0.0f, 0.0f,
-                static_cast<float>(extent.width), static_cast<float>(extent.height)}});
+                static_cast<float>(extent.width), static_cast<float>(extent.height),
+                0.0f, 1.0f}});
             frame.presentBuffer->setScissor(0, {vk::Rect2D{{}, extent}});
             
             // Actual draw commands would go here
@@ -70,12 +87,19 @@ void VulkanWindow::swap() {
     vk::PipelineStageFlags waitStages[] = {vk::PipelineStageFlagBits::eColorAttachmentOutput};
     vk::SubmitInfo submitInfo{1, &(*frame.available), waitStages,
         1, &(*frame.presentBuffer), 1, &(*frame.drawn)};
-    renderer_.getContext().getMainQueue().submit({submitInfo}, {});
+    renderer_.getContext().getMainQueue().submit({submitInfo}, *frame.fence);
 
     // Present image
-    renderer_.getContext().getMainQueue().presentKHR(vk::PresentInfoKHR{
-        1, &(*frame.drawn), 1, &static_cast<const vk::SwapchainKHR&>(swapchain_), &result.value
+    vk::Result presentResult = renderer_.getContext().getMainQueue().presentKHR(vk::PresentInfoKHR{
+        1, &(*frame.drawn), 1, &static_cast<const vk::SwapchainKHR&>(swapchain_), &frameIndex
     });
+
+    if (presentResult == vk::Result::eSuboptimalKHR || presentResult == vk::Result::eErrorOutOfDateKHR) {
+        recreateSwapchain();
+        return;
+    } else if (presentResult != vk::Result::eSuccess) {
+        throw runtime_error("Failed to present swapchain image");
+    }
 
     // Increment the frame
     currentFrame_++;
@@ -95,4 +119,14 @@ void VulkanWindow::createFrames(const vk::Device& device) {
 
 		frames_.push_back(move(frame));
 	}
+}
+
+const SdlWindow& VulkanWindow::getSdlWindow() const {
+    return window_;
+}
+
+void VulkanWindow::recreateSwapchain() {
+    renderer_.getContext().getLogicalDevice().waitIdle();
+    swapchain_ = move(Swapchain(renderer_.getContext(), window_,
+        *surface_, renderer_.getRenderPass(), swapchain_));
 }

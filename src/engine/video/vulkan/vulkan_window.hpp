@@ -18,6 +18,7 @@ namespace subspace {
         public:
             VulkanWindow(const VulkanRenderer& renderer, const std::string& name,
                 const Config& config);
+            ~VulkanWindow();
 
             // Nested types
 			struct Frame {
@@ -29,12 +30,16 @@ namespace subspace {
             // Interface functions
             virtual void swap() override;
 
+            // Getters
+            const SdlWindow& getSdlWindow() const;
+
             // Constants
             static const unsigned maxFramesInFlight = 2;
 
         private:
             // Initialization helpers
             void createFrames(const vk::Device& device);
+            void recreateSwapchain();
 
             // Owner reference
             const VulkanRenderer& renderer_;

@@ -14,9 +14,17 @@ using namespace std;
 using namespace subspace;
 
 Swapchain::Swapchain(const Context& context, const SdlWindow& window,
-	const vk::SurfaceKHR& surface, const vk::RenderPass& renderPass) :
+	const vk::SurfaceKHR& surface, const vk::RenderPass& renderPass,
+	vk::SwapchainKHR oldSwapchain) :
 		context_(context), vulkanSurface_(surface)
 {
+	auto& physicalDevice = context_.getChosenPhysicalDevice();
+
+	// Need to double check for surface support before creating swapchain
+	if (!physicalDevice->getSurfaceSupportKHR(physicalDevice.getUsedQueueFamily(), surface)) {
+		throw runtime_error("Surface does not support swapchain creation");
+	}
+
 	choosePresentMode();
 	chooseSwapExtent(window);
 	uint32_t numImages = chooseImageCount();
@@ -26,7 +34,7 @@ Swapchain::Swapchain(const Context& context, const SdlWindow& window,
 		context_.getPresentFormat().colorSpace, extent_, 1,
 		vk::ImageUsageFlagBits::eColorAttachment, vk::SharingMode::eExclusive,
 		0, nullptr, vk::SurfaceTransformFlagBitsKHR::eIdentity,
-		vk::CompositeAlphaFlagBitsKHR::eOpaque, mode_, true);
+		vk::CompositeAlphaFlagBitsKHR::eOpaque, mode_, true, oldSwapchain);
 
 	handle_ = context_.getLogicalDevice().createSwapchainKHRUnique(createInfo);
 	images_ = context_.getLogicalDevice().getSwapchainImagesKHR(*handle_);
@@ -35,6 +43,22 @@ Swapchain::Swapchain(const Context& context, const SdlWindow& window,
 	createFramebuffers(renderPass);
 
 	logger.logVerbose("Created swapchain");
+}
+
+Swapchain::~Swapchain() {
+	context_.getLogicalDevice().waitIdle();
+	logger.logVerbose("Destroyed swapchain");
+}
+
+Swapchain& Swapchain::operator=(Swapchain&& other) {
+	handle_ = move(other.handle_);
+	mode_ = other.mode_;
+	extent_ = other.extent_;
+	images_ = move(other.images_);
+	imageViews_ = move(other.imageViews_);
+	framebuffers_ = move(other.framebuffers_);
+
+	return *this;
 }
 
 Swapchain::operator const vk::SwapchainKHR&() const {
@@ -130,7 +154,7 @@ void Swapchain::createFramebuffers(const vk::RenderPass& renderPass) {
 
 		framebuffers_.push_back(move(device.createFramebufferUnique({
 			{}, renderPass, 1, &(*i),
-			extent_.width, extent_.height, 0
+			extent_.width, extent_.height, 1
 		})));
 	}
 }
