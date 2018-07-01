@@ -70,8 +70,8 @@ void VulkanRenderer::createPipeline() {
     
     // TODO: Add reconfigurable shaders
     // Load example shaders for now
-    string vertSource = simpleFileRead("rc/shaders/test/vert.spv");
-    string fragSource = simpleFileRead("rc/shaders/test/frag.spv");
+    string vertSource = simpleFileRead("/rc/shaders/test/vert.spv");
+    string fragSource = simpleFileRead("/rc/shaders/test/frag.spv");
 
     // Send shaders to GPU
     vk::UniqueShaderModule vertextShader = device.createShaderModuleUnique({
