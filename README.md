@@ -11,7 +11,8 @@ Subspace is developed primarily using Visual Studio Code and includes `.vscode` 
 ## Dependencies
 
 Subspace currently uses the following libraries:
-* Nothing here yet!
+* SDL2
+* FMT 5
 
 The following libraries are automatically included from source:
 * [nlohmann/json](https://github.com/nlohmann/json)
@@ -21,7 +22,7 @@ The following libraries are automatically included from source:
 
 ## Requirements
 
-Subspace is configured using [CMake](https://cmake.org) and currently supports the latest versins of the following compilers:
+Subspace is configured using [CMake](https://cmake.org) and currently supports the latest versions of the following compilers:
 
 * [gcc](https://gcc.gnu.org/)
 * [Mingw-w64](https://mingw-w64.org/doku.php)
