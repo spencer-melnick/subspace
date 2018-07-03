@@ -74,6 +74,13 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 # Link/include external libraries
 
+
+# Use extra CMake modules on Windows
+if (WIN32)
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules") 
+endif()
+
+
 # Include nlohman/json
 target_include_directories(${PROJECT_NAME} PRIVATE "lib/json/include")
 
@@ -89,6 +96,5 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 
 # SDL2
 find_package(SDL2 REQUIRED)
-string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})

@@ -9,7 +9,7 @@
 using namespace std;
 using namespace subspace;
 
-int main() {
+int main(int, char**) {
     fstream logFile("log.txt", ios::out | ios::trunc);
     logger.setOutput(logFile);
 

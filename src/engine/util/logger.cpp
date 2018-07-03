@@ -34,7 +34,7 @@ namespace subspace {
 
     #ifdef NDEBUG
         Logger logger(Logger::Level::Info);
-    #elif
+    #else
         Logger logger(Logger::Level::Verbose);
     #endif
 }

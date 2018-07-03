@@ -39,7 +39,11 @@ build/generated
 CMakeCache.txt
 Makefile
 compile_commands.json
-*.cmake
+build/*.cmake
+
+# Visual Studio Files
+CMakeSettings.json
+.vs
 
 # Visual Studio Code Files
 # .vscode
