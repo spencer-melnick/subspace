@@ -1,5 +1,8 @@
 #pragma once
-enum Event
-{
-	TEST_EVENT
-};
+
+namespace subspace {
+	enum class Event
+	{
+		Test
+	};
+}

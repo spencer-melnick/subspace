@@ -93,16 +93,23 @@ void VulkanWindow::swap() {
     renderer_.getContext().getMainQueue().submit({submitInfo}, *frame.fence);
 
     // Present image
-    vk::Result presentResult = renderer_.getContext().getMainQueue().presentKHR(vk::PresentInfoKHR{
-        1, &(*frame.drawn), 1, &static_cast<const vk::SwapchainKHR&>(swapchain_), &frameIndex
-    });
+	try {
+		vk::Result presentResult = renderer_.getContext().getMainQueue().presentKHR(vk::PresentInfoKHR{
+			1, &(*frame.drawn), 1, &static_cast<const vk::SwapchainKHR&>(swapchain_), &frameIndex
+			});
 
-    if (presentResult == vk::Result::eSuboptimalKHR || presentResult == vk::Result::eErrorOutOfDateKHR) {
-        recreateSwapchain();
-        return;
-    } else if (presentResult != vk::Result::eSuccess) {
-        throw runtime_error("Failed to present swapchain image");
-    }
+		if (presentResult == vk::Result::eSuboptimalKHR) {
+			recreateSwapchain();
+			return;
+		}
+		else if (presentResult != vk::Result::eSuccess) {
+			throw runtime_error("Failed to present swapchain image");
+		}
+	}
+	catch (vk::OutOfDateKHRError& exception) {
+		recreateSwapchain();
+		return;
+	}
 
     // Increment the frame
     currentFrame_++;

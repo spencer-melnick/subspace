@@ -1,7 +1,12 @@
 #include "simple_file.hpp"
 
 #include <fstream>
-#include <SDL2\SDL.h>
+
+#ifdef _WIN32
+	#include <SDL.h>
+#else
+	#include <SDL2\SDL.h>
+#endif
 
 using namespace std;
 using namespace subspace;

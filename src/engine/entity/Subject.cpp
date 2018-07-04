@@ -1,19 +1,18 @@
-#include "Subject.hpp"
-
-#include <forward_list>
+#include "subject.hpp"
 
 using namespace std;
+using namespace subspace;
 
 void Subject::addObserver(Observer* observer) {
-	_observers.push_front(observer);
+	observers_.push_back(observer);
 }
 
 void Subject::removeObserver(Observer* observer) {
-	_observers.remove(observer);
+	observers_.remove(observer);
 }
 
 void Subject::notify(Event event) {
-	for (auto iterator = _observers.begin(); iterator != _observers.end(); iterator++) {
-		(*iterator)->onNotify(event);
+	for (auto& i : observers_) {
+		i->onNotify(event);
 	}
 }

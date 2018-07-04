@@ -1,17 +1,20 @@
 #pragma once
+
+// STL includes
 #include <forward_list>
 
-#include "Observer.hpp"
-#include "Event.hpp"
+// Project includes
+#include "observer.hpp"
+#include "event.hpp"
 
-using namespace std;
-
-class Subject {
-public:
-	void addObserver(Observer* observer);
-	void removeObserver(Observer* observer);
-private:
-	forward_list<Observer*> _observers;
-protected:
-	void notify(Event event);
-};
+namespace subspace {
+	class Subject {
+		public:
+			void addObserver(Observer* observer);
+			void removeObserver(Observer* observer);
+		private:
+			std::forward_list<Observer*> observers_;
+		protected:
+			void notify(Event event);
+	};
+}
