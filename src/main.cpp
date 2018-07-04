@@ -6,6 +6,8 @@
 #include "engine/video/vulkan/vulkan_renderer.hpp"
 #include "engine/video/vulkan/vulkan_window.hpp"
 
+#undef main
+
 using namespace std;
 using namespace subspace;
 
