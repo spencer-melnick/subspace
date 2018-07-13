@@ -46,6 +46,7 @@ CMakeSettings.json
 .vs
 .pdb
 .log
+subspace.tlog
 
 # Visual Studio Code Files
 # .vscode

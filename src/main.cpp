@@ -17,7 +17,7 @@ int main(int, char**) {
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    //try {
+    try {
         logger.logInfo("Starting Subspace Engine...");
         Config config {"rc/config.json"};
 
@@ -47,9 +47,9 @@ int main(int, char**) {
 
             window.swap();
         }
-    //} catch (const exception& e) {
-    //    logger.logError(e.what());
-    //}
+    } catch (const exception& e) {
+        logger.logError(e.what());
+    }
 
     return 0;
 }
