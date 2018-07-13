@@ -9,7 +9,7 @@
 using namespace std;
 using namespace subspace;
 
-SdlWindow::SdlWindow(const std::string& name, unsigned displayNum, unsigned width,
+SdlVulkanWindow::SdlVulkanWindow(const std::string& name, unsigned displayNum, unsigned width,
     unsigned height, uint32_t flags) :
     name_(name), displayNum_(displayNum), width_(width), height_(height)
 {
@@ -25,16 +25,16 @@ SdlWindow::SdlWindow(const std::string& name, unsigned displayNum, unsigned widt
     logger.logVerbose("Created SDL window - {}", name_);
 }
 
-SdlWindow::~SdlWindow() {
+SdlVulkanWindow::~SdlVulkanWindow() {
     SDL_DestroyWindow(handle_);
     logger.logVerbose("Destroyed SDL window - {}", name_);
 }
 
-SdlWindow::operator SDL_Window*() const {
+SdlVulkanWindow::operator SDL_Window*() const {
     return handle_;
 }
 
-vector<const char*> SdlWindow::listRequiredExtensions() const {
+vector<const char*> SdlVulkanWindow::listRequiredExtensions() const {
     unsigned numExtensions;
     vector<const char*> extensions;
 
@@ -57,7 +57,7 @@ vector<const char*> SdlWindow::listRequiredExtensions() const {
     return extensions;
 }
 
-vk::SurfaceKHR SdlWindow::createSurface(const vk::Instance& instance) const {
+vk::SurfaceKHR SdlVulkanWindow::createSurface(const vk::Instance& instance) const {
     VkSurfaceKHR surface;
 
     if (SDL_Vulkan_CreateSurface(handle_, instance, &surface) != SDL_TRUE) {
@@ -68,14 +68,14 @@ vk::SurfaceKHR SdlWindow::createSurface(const vk::Instance& instance) const {
     return vk::SurfaceKHR(surface);
 }
 
-const std::string& SdlWindow::getName() const {
+const std::string& SdlVulkanWindow::getName() const {
     return name_;
 }
 
-unsigned SdlWindow::getWidth() const {
+unsigned SdlVulkanWindow::getWidth() const {
     return width_;
 }
 
-unsigned SdlWindow::getHeight() const {
+unsigned SdlVulkanWindow::getHeight() const {
     return height_;
 }

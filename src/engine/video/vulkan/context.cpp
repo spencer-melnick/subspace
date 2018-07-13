@@ -13,7 +13,7 @@ using namespace subspace;
 
 Context::Context() {
     // Create temporary window to check required extensions
-    SdlWindow tempWindow("Temp", 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_VULKAN);
+    SdlVulkanWindow tempWindow("Temp", 0, 1, 1, SDL_WINDOW_HIDDEN | SDL_WINDOW_VULKAN);
     auto instanceExtensions = tempWindow.listRequiredExtensions();
     vector<const char*> instanceLayers;
 

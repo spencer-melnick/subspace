@@ -31,7 +31,7 @@ namespace subspace {
             virtual void swap() override;
 
             // Getters
-            const SdlWindow& getSdlWindow() const;
+            const SdlVulkanWindow& getSdlWindow() const;
 
             // Constants
             static const unsigned maxFramesInFlight = 2;
@@ -45,7 +45,7 @@ namespace subspace {
             const VulkanRenderer& renderer_;
 
             // Member variables
-            SdlWindow window_;
+            SdlVulkanWindow window_;
             vk::UniqueSurfaceKHR surface_;
             vk::UniqueCommandPool commandPool_;
             std::vector<Frame> frames_;

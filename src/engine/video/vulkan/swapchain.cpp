@@ -17,7 +17,7 @@
 using namespace std;
 using namespace subspace;
 
-Swapchain::Swapchain(const Context& context, const SdlWindow& window,
+Swapchain::Swapchain(const Context& context, const SdlVulkanWindow& window,
 	const vk::SurfaceKHR& surface, const vk::RenderPass& renderPass,
 	vk::SwapchainKHR oldSwapchain) :
 		context_(context), vulkanSurface_(surface)
@@ -129,7 +129,7 @@ void Swapchain::createImageViews() {
 	}
 }
 
-void Swapchain::chooseSwapExtent(const SdlWindow& window) {
+void Swapchain::chooseSwapExtent(const SdlVulkanWindow& window) {
 	auto& device = context_.getChosenPhysicalDevice();
 	vk::SurfaceCapabilitiesKHR capabilities = device->getSurfaceCapabilitiesKHR(vulkanSurface_);
 

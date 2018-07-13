@@ -14,7 +14,7 @@ namespace subspace {
 
 	class Swapchain {
 		public:
-			Swapchain(const Context& context, const SdlWindow& window,
+			Swapchain(const Context& context, const SdlVulkanWindow& window,
 				const vk::SurfaceKHR& vulkanSurface, const vk::RenderPass& renderPass,
 				vk::SwapchainKHR oldSwapchain = vk::SwapchainKHR(nullptr));
 			~Swapchain();
@@ -33,7 +33,7 @@ namespace subspace {
 		private:
 			// Initialization helpers
 			void choosePresentMode();
-			void chooseSwapExtent(const SdlWindow& window);
+			void chooseSwapExtent(const SdlVulkanWindow& window);
 			uint32_t chooseImageCount();
 			void createImageViews();
 			void createFramebuffers(const vk::RenderPass& renderPass);

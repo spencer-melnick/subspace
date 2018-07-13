@@ -131,7 +131,7 @@ void VulkanWindow::createFrames(const vk::Device& device) {
 	}
 }
 
-const SdlWindow& VulkanWindow::getSdlWindow() const {
+const SdlVulkanWindow& VulkanWindow::getSdlWindow() const {
     return window_;
 }
 

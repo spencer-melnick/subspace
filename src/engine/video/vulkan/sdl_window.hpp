@@ -18,11 +18,11 @@
 #include "engine/util/config.hpp"
 
 namespace subspace {
-    class SdlWindow {
+    class SdlVulkanWindow {
         public:
-            SdlWindow(const std::string& name, unsigned displayNum, unsigned width,
+            SdlVulkanWindow(const std::string& name, unsigned displayNum, unsigned width,
                 unsigned height, uint32_t flags);
-            ~SdlWindow();
+            ~SdlVulkanWindow();
 
             // Member functions
             std::vector<const char*> listRequiredExtensions() const;

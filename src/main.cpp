@@ -3,8 +3,7 @@
 #include <thread>
 
 #include "engine/subspace.hpp"
-#include "engine/video/vulkan/vulkan_renderer.hpp"
-#include "engine/video/vulkan/vulkan_window.hpp"
+#include "engine/video/sdl/sdl_window.hpp"
 
 #undef main
 
@@ -21,8 +20,7 @@ int main(int, char**) {
         logger.logInfo("Starting Subspace Engine...");
         Config config {"rc/config.json"};
 
-        VulkanRenderer renderer;
-        VulkanWindow window(renderer, "Subspace", config);
+        SdlWindow window("Subspace", config);
 
         bool running = true;
         SDL_Event event;
