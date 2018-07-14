@@ -7,7 +7,7 @@
 #ifdef _WIN32
 	#include <SDL.h>
 	#include <SDL_video.h>
-#elif
+#else
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_video.h>
 #endif
@@ -21,6 +21,9 @@ namespace subspace {
 		public:
 			SdlWindow(const std::string& name, const Config& config);
 			~SdlWindow();
+
+			// Cast to wrapped type
+			operator SDL_Window*() const;
 
 			// Interface functions
 			virtual void swap() override;

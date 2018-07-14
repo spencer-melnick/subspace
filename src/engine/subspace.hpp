@@ -7,5 +7,6 @@
  * Main engine include file.
  */
 
+#include "math/math.hpp"
 #include "util/util.hpp"
 #include "video/video.hpp"

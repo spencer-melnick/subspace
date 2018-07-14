@@ -4,6 +4,7 @@
 
 #include "engine/subspace.hpp"
 #include "engine/video/sdl/sdl_window.hpp"
+#include "engine/video/sdl/sdl_renderer.hpp"
 
 #undef main
 
@@ -21,6 +22,7 @@ int main(int, char**) {
         Config config {"rc/config.json"};
 
         SdlWindow window("Subspace", config);
+		SdlRenderer renderer(window);
 
         bool running = true;
         SDL_Event event;
@@ -44,6 +46,7 @@ int main(int, char**) {
             }
 
             window.swap();
+			renderer.draw();
         }
     } catch (const exception& e) {
         logger.logError(e.what());

@@ -35,6 +35,10 @@ SdlWindow::~SdlWindow() {
 	logger.logVerbose("Destroyed window {}", name_);
 }
 
+SdlWindow::operator SDL_Window*() const {
+	return handle_;
+}
+
 void SdlWindow::swap() {
 
 }

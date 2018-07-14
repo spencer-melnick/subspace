@@ -40,6 +40,7 @@ set(SOURCES
     "src/engine/util/config.cpp"
     "src/engine/util/logger.cpp"
     "src/engine/util/simple_file.cpp"
+	"src/engine/video/sdl/sdl_renderer.cpp"
 	"src/engine/video/sdl/sdl_window.cpp"
     "src/engine/video/vulkan/context.cpp"
     "src/engine/video/vulkan/physical_device.cpp"
