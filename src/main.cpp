@@ -2,11 +2,12 @@
 #include <fstream>
 #include <thread>
 
+#include <SDL_image.h>
+#include <SDL_main.h>
+
 #include "engine/subspace.hpp"
 #include "engine/video/sdl/sdl_window.hpp"
 #include "engine/video/sdl/sdl_renderer.hpp"
-
-#undef main
 
 using namespace std;
 using namespace subspace;
@@ -16,6 +17,7 @@ int main(int, char**) {
     logger.setOutput(logFile);
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+	IMG_Init(IMG_INIT_PNG);
 
     try {
         logger.logInfo("Starting Subspace Engine...");
@@ -26,6 +28,15 @@ int main(int, char**) {
 
         bool running = true;
         SDL_Event event;
+
+		auto& sprite = renderer.createSprite();
+		string basepath = SDL_GetBasePath();
+		string filename = basepath.substr(0, basepath.rfind("subspace")) + "subspace/rc/logo.png";
+		SDL_Surface* image = IMG_Load(filename.c_str());
+		if (image == nullptr) {
+			logger.logWarning("Failed to load image - SDL_Image error: {}", IMG_GetError());
+		}
+		sprite.texture = SDL_CreateTextureFromSurface(renderer, image);
 
         while (running) {
             // TODO: Add event handling system

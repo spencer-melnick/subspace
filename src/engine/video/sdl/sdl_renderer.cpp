@@ -29,13 +29,17 @@ SdlRenderer::~SdlRenderer() {
 	logger.logVerbose("Destroyed SDL renderer");
 }
 
+SdlRenderer::operator SDL_Renderer*() {
+	return handle_;
+}
+
 void SdlRenderer::draw() {
 	SDL_RenderClear(handle_);
 
 	// For each sprite, render
 	for (auto& i : sprites_) {
 		if (SDL_RenderCopyEx(handle_, i.texture, nullptr, nullptr, 0.0, nullptr, SDL_FLIP_NONE) != 0) {
-			logger.logWarning("Failed to render sprite- SDL error: {}", SDL_GetError());
+			logger.logWarning("Failed to render sprite - SDL error: {}", SDL_GetError());
 		}
 	}
 

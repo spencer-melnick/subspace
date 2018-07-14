@@ -21,6 +21,9 @@ namespace subspace {
 			SdlRenderer(const SdlWindow& window);
 			~SdlRenderer();
 
+			// Cast to wrapped type
+			operator SDL_Renderer*();
+
 			// Interface functions
 			virtual void draw() override;
 

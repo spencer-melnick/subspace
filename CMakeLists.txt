@@ -71,7 +71,11 @@ add_custom_target(docs COMMAND "doxygen" "${CMAKE_SOURCE_DIR}/doc/Doxyfile"
 
 
 # Executable
-add_executable(${PROJECT_NAME} ${SOURCES})
+if (WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
+	add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
+else()
+	add_executable(${PROJECT_NAME} ${SOURCES})
+endif()
 
 
 # Link/include external libraries
@@ -100,3 +104,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${Vulkan_INCLUDE_DIRS})
 find_package(SDL2 REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS})
+
+# SDL2_image
+find_package(SDL2_image REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_IMAGE_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
