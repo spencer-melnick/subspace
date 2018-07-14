@@ -33,6 +33,16 @@ void SdlRenderer::draw() {
 	SDL_RenderClear(handle_);
 
 	// For each sprite, render
+	for (auto& i : sprites_) {
+		if (SDL_RenderCopyEx(handle_, i.texture, nullptr, nullptr, 0.0, nullptr, SDL_FLIP_NONE) != 0) {
+			logger.logWarning("Failed to render sprite- SDL error: {}", SDL_GetError());
+		}
+	}
 
 	SDL_RenderPresent(handle_);
+}
+
+SdlSprite& SdlRenderer::createSprite() {
+	sprites_.emplace_back();
+	return sprites_.back();
 }

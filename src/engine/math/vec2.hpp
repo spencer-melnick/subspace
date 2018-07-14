@@ -103,5 +103,6 @@ namespace subspace {
 		return lhs;
 	}
 
-	using Vec2 = Simple_Vec2<float>;
+	using Vec2 = Simple_Vec2<double>;
+	using Vec2i = Simple_Vec2<int>;
 }

@@ -13,6 +13,7 @@
 // Project includes
 #include "engine/video/renderer.hpp"
 #include "sdl_window.hpp"
+#include "sprite.hpp"
 
 namespace subspace {
 	class SdlRenderer: public IRenderer {
@@ -23,8 +24,12 @@ namespace subspace {
 			// Interface functions
 			virtual void draw() override;
 
+			// Member functions
+			SdlSprite& createSprite();
+
 		private:
 			const SdlWindow& window_;
 			SDL_Renderer* handle_;
+			std::vector<SdlSprite> sprites_;
 	};
 }
