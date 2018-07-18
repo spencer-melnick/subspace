@@ -5,11 +5,7 @@
 #include <utility>
 
 // Library includes
-#ifdef _WIN32
-	#include <SDL_vulkan.h>
-#else
-	#include <SDL2/SDL_vulkan.h>
-#endif
+#include <SDL_vulkan.h>
 
 // Project includes
 #include "engine/util/logger.hpp"

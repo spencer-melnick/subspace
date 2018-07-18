@@ -1,12 +1,9 @@
 #include "simple_file.hpp"
 
 #include <fstream>
+#include <exception>
 
-#ifdef _WIN32
-	#include <SDL.h>
-#else
-	#include <SDL2\SDL.h>
-#endif
+#include <SDL.h>
 
 using namespace std;
 using namespace subspace;
@@ -19,8 +16,8 @@ string subspace::simpleFileRead(const string& filename) {
     
 	auto size = file.tellg();
 
-	if ((int)size == -1) {
-		throw exception(("Could not find file: " + filename).c_str());
+	if (static_cast<int>(size) == -1) {
+		throw runtime_error("Could not find file: " + filename);
 	}
 
     string result;

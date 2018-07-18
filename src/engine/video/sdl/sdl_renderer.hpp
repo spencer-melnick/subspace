@@ -4,11 +4,7 @@
 #include <vector>
 
 // Library includes
-#ifdef _WIN32
-	#include <SDL_render.h>
-#else
-	#include <SDL2/SDL_render.h>
-#endif
+#include <SDL_render.h>
 
 // Project includes
 #include "engine/video/renderer.hpp"

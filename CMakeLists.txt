@@ -81,9 +81,12 @@ endif()
 # Link/include external libraries
 
 
+# CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules")
+
 # Use extra CMake modules on Windows
 if (WIN32)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules") 
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules/windows") 
 endif()
 
 
