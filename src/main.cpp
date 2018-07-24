@@ -8,6 +8,7 @@
 #include "engine/subspace.hpp"
 #include "engine/video/sdl/sdl_window.hpp"
 #include "engine/video/sdl/sdl_renderer.hpp"
+#include "engine/video/sdl/texture_factory.hpp"
 
 using namespace std;
 using namespace subspace;
@@ -30,13 +31,7 @@ int main(int, char**) {
         SDL_Event event;
 
 		auto& sprite = renderer.createSprite();
-		string basepath = SDL_GetBasePath();
-		string filename = basepath.substr(0, basepath.rfind("subspace")) + "subspace/rc/logo.png";
-		SDL_Surface* image = IMG_Load(filename.c_str());
-		if (image == nullptr) {
-			logger.logWarning("Failed to load image - SDL_Image error: {}", IMG_GetError());
-		}
-		sprite.texture = SDL_CreateTextureFromSurface(renderer, image);
+		sprite.texture = renderer.getTextureFactory().getTexture("rc/logo.png");
 
         while (running) {
             // TODO: Add event handling system
@@ -59,6 +54,9 @@ int main(int, char**) {
             window.swap();
 			renderer.draw();
         }
+
+        renderer.destroySprite(sprite);
+        renderer.getTextureFactory().checkResources();
     } catch (const exception& e) {
         logger.logError(e.what());
     }

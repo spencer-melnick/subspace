@@ -4,13 +4,8 @@
 #include <string>
 
 // Library includes
-#ifdef _WIN32
-	#include <SDL.h>
-	#include <SDL_video.h>
-#else
-	#include <SDL2/SDL.h>
-	#include <SDL2/SDL_video.h>
-#endif
+#include <SDL.h>
+#include <SDL_video.h>
 
 // Project includes
 #include "engine/video/window.hpp"

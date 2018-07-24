@@ -22,6 +22,9 @@ SdlRenderer::SdlRenderer(const SdlWindow& window) :
 	}
 
 	SDL_SetRenderDrawColor(handle_, 40, 40, 40, 255);
+
+	// Create new texture factory
+	textureFactory_ = std::make_unique<TextureFactory>(*this);
 }
 
 SdlRenderer::~SdlRenderer() {
@@ -29,7 +32,7 @@ SdlRenderer::~SdlRenderer() {
 	logger.logVerbose("Destroyed SDL renderer");
 }
 
-SdlRenderer::operator SDL_Renderer*() {
+SdlRenderer::operator SDL_Renderer*() const {
 	return handle_;
 }
 
@@ -38,7 +41,13 @@ void SdlRenderer::draw() {
 
 	// For each sprite, render
 	for (auto& i : sprites_) {
-		if (SDL_RenderCopyEx(handle_, i.texture, nullptr, nullptr, 0.0, nullptr, SDL_FLIP_NONE) != 0) {
+		auto& texture = *i.texture;
+
+		Vec2 size {texture.dimension.x * i.scale.x, texture.dimension.y * i.scale.y};
+		Vec2 topLeft = i.position - (size / 2.0);
+		SDL_Rect dest {topLeft.x, topLeft.y, size.x, size.y};
+
+		if (SDL_RenderCopyEx(handle_, texture.handle, nullptr, &dest, 0.0, nullptr, SDL_FLIP_NONE) != 0) {
 			logger.logWarning("Failed to render sprite - SDL error: {}", SDL_GetError());
 		}
 	}
@@ -49,4 +58,17 @@ void SdlRenderer::draw() {
 SdlSprite& SdlRenderer::createSprite() {
 	sprites_.emplace_back();
 	return sprites_.back();
+}
+
+void SdlRenderer::destroySprite(SdlSprite& sprite) {
+	for (auto i = sprites_.begin(); i != sprites_.end(); i++) {
+		if (&(*i) == &sprite) {
+			sprites_.erase(i);
+			break;
+		}
+	}
+}
+
+TextureFactory& SdlRenderer::getTextureFactory() {
+	return *textureFactory_;
 }

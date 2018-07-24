@@ -47,12 +47,12 @@ namespace subspace {
 		}
 
 		// Magnitude and normalize are only enabled for floating point types
-		template <typename = std::enable_if<std::is_floating_point<T>::value>::type>
+		template <typename U = T, typename std::enable_if<std::is_floating_point<U>::value>::type = 0>
 		T magnitude() {
 			return sqrt(magnitudeSquared());
 		}
 
-		template <typename = std::enable_if<std::is_floating_point<T>::value>::type>
+		template <typename U = T, typename std::enable_if<std::is_floating_point<U>::value>::type = 0>
 		Simple_Vec2<T>& normalize() {
 			T m = magnitude();
 
@@ -62,7 +62,7 @@ namespace subspace {
 			return *this;
 		}
 
-		template <typename = std::enable_if<std::is_floating_point<T>::value>::type>
+		template <typename U = T, typename std::enable_if<std::is_floating_point<U>::value>::type = 0>
 		Simple_Vec2<T> normalized() {
 			Simple_Vec2<T> vec(*this);
 			return vec.normalize();

@@ -41,7 +41,8 @@ set(SOURCES
     "src/engine/util/logger.cpp"
     "src/engine/util/simple_file.cpp"
 	"src/engine/video/sdl/sdl_renderer.cpp"
-	"src/engine/video/sdl/sdl_window.cpp"
+    "src/engine/video/sdl/sdl_window.cpp"
+    "src/engine/video/sdl/texture_factory.cpp"
     "src/engine/video/vulkan/context.cpp"
     "src/engine/video/vulkan/physical_device.cpp"
     "src/engine/video/vulkan/sdl_window.cpp"
@@ -81,9 +82,12 @@ endif()
 # Link/include external libraries
 
 
+# CMake modules
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules")
+
 # Use extra CMake modules on Windows
 if (WIN32)
-	list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules") 
+	list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/cmake-modules/windows") 
 endif()
 
 
